@@ -1,6 +1,6 @@
 # String Tuner
 
-![String Tuner screenshot](docs/Accordatore.png)
+![String Tuner screenshot](docs/string-tuner.png)
 
 A chromatic instrument tuner that runs in the browser and on Android. It listens to your microphone in real time, detects the pitch of the note you're playing, and tells you how many cents sharp or flat you are from the target string.
 
@@ -110,4 +110,10 @@ npx cap open android
 The app declares the `RECORD_AUDIO` permission in `AndroidManifest.xml`, which Android requires for microphone access. The permission prompt will appear on first launch.
 
 **Min SDK:** Android 7.0 (API 24) — **Target SDK:** API 36
+
+## License
+
+This project is licensed under the **MIT License** — you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, provided that the original copyright notice and this permission notice are included in all copies or substantial portions of the software.
+
+See the [LICENSE](LICENSE) file for the full text.
 
