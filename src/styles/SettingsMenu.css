@@ -1,0 +1,98 @@
+.settings-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: flex-end;
+	z-index: 100;
+}
+
+.settings-sheet {
+	width: 100%;
+	background: var(--surface);
+	border-radius: 16px 16px 0 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+}
+
+.sheet-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.25rem 0.75rem;
+	border-bottom: 1px solid var(--border);
+	flex-shrink: 0;
+}
+
+.sheet-title {
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	color: var(--text-primary);
+}
+
+.close-btn {
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	font-size: 1.1rem;
+	cursor: pointer;
+	padding: 0.25rem;
+	line-height: 1;
+}
+.close-btn:hover {
+	color: var(--text-primary);
+}
+
+.sheet-body {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	padding: 1.25rem;
+}
+
+.settings-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.settings-label {
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.09em;
+	color: var(--text-muted);
+}
+
+.options-row {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.option-btn {
+	flex: 1;
+	padding: 0.55rem 0.75rem;
+	border-radius: 10px;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	font-weight: 500;
+	font-family: 'Elms Sans', system-ui, sans-serif;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		color 0.15s;
+}
+.option-btn:hover {
+	background: var(--surface-raised);
+	color: var(--text-primary);
+}
+.option-btn.active {
+	background: var(--accent-dim);
+	color: var(--accent);
+	font-weight: 600;
+}

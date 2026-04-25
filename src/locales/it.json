@@ -1,0 +1,29 @@
+{
+	"tuner": {
+		"strSuffix": "corde",
+		"allTuned": "Tutte le corde sono accordate!",
+		"string": "Corda {n}",
+		"hintTooHigh": "Abbassa",
+		"hintTooLow": "Alza",
+		"hintInRange": "Tieni fermo…",
+		"start": "Avvia",
+		"stop": "Stop"
+	},
+	"selector": {
+		"title": "Accordature",
+		"guitar": "Chitarra",
+		"ukulele": "Ukulele",
+		"bass": "Basso",
+		"violin": "Violino",
+		"custom": "personalizzata",
+		"searchPlaceholder": "Cerca accordature…",
+		"noResults": "Nessuna accordatura trovata"
+	},
+	"settings": {
+		"title": "Impostazioni",
+		"theme": "Tema",
+		"light": "Chiaro",
+		"dark": "Scuro",
+		"language": "Lingua"
+	}
+}

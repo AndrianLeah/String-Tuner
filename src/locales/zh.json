@@ -1,0 +1,29 @@
+{
+	"tuner": {
+		"strSuffix": "弦",
+		"allTuned": "所有弦已调准！",
+		"string": "第 {n} 弦",
+		"hintTooHigh": "调低",
+		"hintTooLow": "调高",
+		"hintInRange": "保持…",
+		"start": "开始",
+		"stop": "停止"
+	},
+	"selector": {
+		"title": "调音方式",
+		"guitar": "吉他",
+		"ukulele": "尤克里里",
+		"bass": "贝斯",
+		"violin": "小提琴",
+		"custom": "自定义",
+		"searchPlaceholder": "搜索调音…",
+		"noResults": "未找到调音方式"
+	},
+	"settings": {
+		"title": "设置",
+		"theme": "主题",
+		"light": "浅色",
+		"dark": "深色",
+		"language": "语言"
+	}
+}

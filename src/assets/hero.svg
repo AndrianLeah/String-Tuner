@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="forkGrad" x1="640" y1="112" x2="640" y2="560"
+                    gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="40%"  stop-color="#ede6ff"/>
+      <stop offset="100%" stop-color="#b89efb"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Ring: center (640,320), r=208. Circumference≈1307, 75%≈980. Top y=112. -->
+  <circle cx="640" cy="320" r="208"
+    fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="4"/>
+  <circle cx="640" cy="320" r="208"
+    fill="none"
+    stroke="#6dd58c" stroke-width="6" stroke-linecap="round"
+    stroke-dasharray="980 327"
+    transform="rotate(-90 640 320)"
+    filter="url(#glow)"
+    opacity="0.88"/>
+
+  <!-- In-tune dot at 12 o'clock (y = 320-208 = 112) -->
+  <circle cx="640" cy="112" r="11" fill="#6dd58c" filter="url(#glow)"/>
+
+  <!--
+    Fork centered at x=640. Proportions match icon (scaled to ring r=208):
+      Left prong:   x=574, y=112, w=44, h=310, rx=22 -> bottom y=422
+      Right prong:  x=662, y=112, w=44, h=310, rx=22 -> bottom y=422
+      U-connector:  x=574, y=352, w=132, h=100, rx=50 (starts 70px above prong bottom)
+      Handle:       x=618, y=372, w=44, h=188, rx=22 -> bottom y=560
+  -->
+  <rect x="574" y="112" width="44"  height="310" rx="22" fill="url(#forkGrad)"/>
+  <rect x="662" y="112" width="44"  height="310" rx="22" fill="url(#forkGrad)"/>
+  <rect x="574" y="352" width="132" height="100" rx="50" fill="url(#forkGrad)"/>
+  <rect x="618" y="372" width="44"  height="188" rx="22" fill="url(#forkGrad)"/>
+</svg>

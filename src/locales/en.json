@@ -1,0 +1,29 @@
+{
+	"tuner": {
+		"strSuffix": "str",
+		"allTuned": "All strings in tune!",
+		"string": "String {n}",
+		"hintTooHigh": "Tune down",
+		"hintTooLow": "Tune up",
+		"hintInRange": "Hold steady…",
+		"start": "Start",
+		"stop": "Stop"
+	},
+	"selector": {
+		"title": "Tunings",
+		"guitar": "Guitar",
+		"ukulele": "Ukulele",
+		"bass": "Bass",
+		"violin": "Violin",
+		"custom": "custom",
+		"searchPlaceholder": "Search tunings…",
+		"noResults": "No tunings found"
+	},
+	"settings": {
+		"title": "Settings",
+		"theme": "Theme",
+		"light": "Light",
+		"dark": "Dark",
+		"language": "Language"
+	}
+}

@@ -1,0 +1,235 @@
+.selector-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: flex-end;
+	z-index: 100;
+}
+
+.selector-sheet {
+	width: 100%;
+	max-height: 82dvh;
+	background: var(--surface);
+	border-radius: 16px 16px 0 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+
+.sheet-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.25rem 0.75rem;
+	border-bottom: 1px solid var(--border);
+	flex-shrink: 0;
+}
+
+.sheet-title {
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	color: var(--text-primary);
+}
+
+.close-btn {
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	font-size: 1.1rem;
+	cursor: pointer;
+	padding: 0.25rem;
+	line-height: 1;
+}
+.close-btn:hover {
+	color: var(--text-primary);
+}
+
+/* ── Category tabs ─────────────────────────────────────────────────────────── */
+.category-tabs {
+	display: flex;
+	padding: 0.75rem 1rem 0;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.cat-tab {
+	flex: 1;
+	padding: 0.5rem 0.25rem;
+	border-radius: 8px;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.85rem;
+	font-weight: 500;
+	font-family: 'Elms Sans', system-ui, sans-serif;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		color 0.15s;
+}
+.cat-tab:hover {
+	background: var(--surface-raised);
+	color: var(--text-primary);
+}
+.cat-tab.active {
+	background: var(--accent-dim);
+	border: none;
+	color: var(--accent);
+	font-weight: 600;
+}
+
+/* ── Search ────────────────────────────────────────────────────────────────── */
+.search-row {
+	display: flex;
+	align-items: center;
+	margin: 0.6rem 1rem 0.5rem;
+	background: var(--surface-low);
+	border: none;
+	border-radius: 10px;
+	padding: 0 0.75rem;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.search-icon {
+	font-size: 0.85rem;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.search-input {
+	flex: 1;
+	background: none;
+	border: none;
+	outline: none;
+	padding: 0.55rem 0;
+	font-size: 0.9rem;
+	font-family: 'Elms Sans', system-ui, sans-serif;
+	color: var(--text-primary);
+	user-select: text;
+	-webkit-user-select: text;
+}
+.search-input::placeholder {
+	color: var(--text-faint);
+}
+.search-input::-webkit-search-cancel-button {
+	display: none;
+}
+
+.search-clear {
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	font-size: 0.8rem;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+	flex-shrink: 0;
+}
+.search-clear:hover {
+	color: var(--text-primary);
+}
+
+/* ── Tuning list ───────────────────────────────────────────────────────────── */
+.tuning-list {
+	overflow-y: auto;
+	padding: 0 1rem;
+	flex: 1;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.5rem;
+	align-content: start;
+	padding-bottom: 0.75rem;
+}
+
+@media (orientation: landscape) {
+	.tuning-list {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.no-results {
+	grid-column: 1 / -1;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	padding: 1.5rem 0;
+	margin: 0;
+}
+
+.tuning-card {
+	background: transparent;
+	border: none;
+	border-radius: 10px;
+	padding: 0.6rem 0.75rem;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.15s;
+	width: 100%;
+}
+.tuning-card:hover {
+	background: var(--surface-low);
+}
+.tuning-card.selected {
+	background: var(--accent-dim);
+}
+
+.card-top {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 0.35rem;
+}
+
+.card-name {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	flex: 1;
+}
+.tuning-card.selected .card-name {
+	color: var(--accent);
+}
+
+.card-strings {
+	font-size: 0.65rem;
+	color: var(--text-faint);
+	font-weight: 500;
+}
+
+.badge-custom {
+	font-size: 0.6rem;
+	background: var(--surface-raised);
+	color: var(--text-secondary);
+	border-radius: 4px;
+	padding: 1px 4px;
+}
+
+.delete-btn {
+	background: none;
+	border: none;
+	color: var(--red);
+	font-size: 0.75rem;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+.card-notes {
+	display: flex;
+	gap: 0.3rem;
+	flex-wrap: wrap;
+}
+
+.string-note {
+	font-size: 1.05rem;
+	color: var(--chip-note);
+	font-family: 'Courier New', monospace;
+}
+.string-note sub {
+	font-size: 0.72rem;
+	color: var(--text-faint);
+}

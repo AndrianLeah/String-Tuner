@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Base dark gradient — center-biased -->
+    <radialGradient id="bg" cx="40%" cy="40%" r="70%">
+      <stop offset="0%"   stop-color="#1e0a3c"/>
+      <stop offset="100%" stop-color="#050508"/>
+    </radialGradient>
+
+    <!-- Aurora blobs -->
+    <radialGradient id="a1" cx="18%" cy="22%" r="55%">
+      <stop offset="0%"   stop-color="#7c3aed" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="a2" cx="84%" cy="80%" r="50%">
+      <stop offset="0%"   stop-color="#2563eb" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="a3" cx="80%" cy="16%" r="42%">
+      <stop offset="0%"   stop-color="#c026d3" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#c026d3" stop-opacity="0"/>
+    </radialGradient>
+
+    <!--
+      Fork geometry (all coords relative to canvas 1024×1024, center=512):
+        Prong top:     y = 210
+        Prong bottom:  y = 530  (height=320)
+        U inner top:   y = 490  (40px above prong bottom, fully fused)
+        U outer bottom:y = 580  (height=90, radius=45 → full semicircle)
+        Handle top:    y = 545  (inside U-connector, no gap)
+        Handle bottom: y = 810  (height=265)
+        Prong width: 58,  gap between prongs inner: 100
+        Left prong x:  427–485
+        Right prong x: 539–597
+        U-connector x: 427–597 (width=170)
+        Handle x:      483–541 (width=58, centered at 512)
+    -->
+    <linearGradient id="forkGrad" x1="512" y1="225" x2="512" y2="796"
+                    gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="40%"  stop-color="#ede6ff"/>
+      <stop offset="100%" stop-color="#b89efb"/>
+    </linearGradient>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Rounded-square clip -->
+    <clipPath id="clip">
+      <rect width="1024" height="1024" rx="230"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#clip)">
+    <!-- ── Background ──────────────────────────────────── -->
+    <rect width="1024" height="1024" fill="url(#bg)"/>
+    <rect width="1024" height="1024" fill="url(#a1)"/>
+    <rect width="1024" height="1024" fill="url(#a2)"/>
+    <rect width="1024" height="1024" fill="url(#a3)"/>
+
+    <!--
+      Ring: centered at (512, 490) so it sits around the fork body.
+      Radius 265 → top of ring y=225, bottom y=755.
+      The whole composition (ring top y=225, handle bottom y=810) spans 585px,
+      vertically centered in 1024 → top offset = (1024-585)/2 = 219.5 ≈ ring top 225. ✓
+    -->
+    <!-- Ring track -->
+    <circle cx="512" cy="490" r="265"
+      fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="5"/>
+
+    <!-- Ring arc — 75% (circumference ≈ 1665, 75% ≈ 1249) -->
+    <circle cx="512" cy="490" r="265"
+      fill="none"
+      stroke="#6dd58c" stroke-width="8" stroke-linecap="round"
+      stroke-dasharray="1249 416"
+      transform="rotate(-90 512 490)"
+      filter="url(#glow)"
+      opacity="0.88"/>
+
+    <!-- In-tune indicator dot at 12 o'clock (top of ring: y = 490-265 = 225) -->
+    <circle cx="512" cy="225" r="14" fill="#6dd58c" filter="url(#glow)"/>
+
+    <!-- ── Tuning fork ────────────────────────────────── -->
+    <!--
+      Three rects with generous overlaps. Since all share the same
+      userSpaceOnUse linearGradient, overlapping areas are invisible — no seam.
+
+      Left prong:   x=428, y=210, w=56, h=360, rx=28  → bottom edge y=570
+      Right prong:  x=540, y=210, w=56, h=360, rx=28  → bottom edge y=570
+      U-connector:  x=428, y=460, w=168, h=130, rx=65  → covers prong bottoms fully
+                    (y=460 is 110px above prong bottom y=570, well past rx=28 rounded end)
+      Handle:       x=484, y=480, w=56,  h=330, rx=28  → bottom y=810
+                    (y=480 is inside U-connector, fully merged)
+    -->
+    <!--
+      Proportions match hero fork exactly (scale ×1.274 from hero's ring r=208 to icon r=265):
+        Prong w=56, gap=56, handle w=56 (equal thirds, total fork width=168)
+        Prong top = ring top = y=225; prong h=395 → bottom y=620
+        U-connector: y=531 (306px below prong top), h=127, rx=63
+        Handle: y=551 (inside U), h=245 → bottom y=796 (41px below ring bottom 755)
+    -->
+    <rect x="428" y="225" width="56"  height="395" rx="28" fill="url(#forkGrad)"/>
+    <rect x="540" y="225" width="56"  height="395" rx="28" fill="url(#forkGrad)"/>
+    <rect x="428" y="531" width="168" height="127" rx="63" fill="url(#forkGrad)"/>
+    <rect x="484" y="551" width="56"  height="245" rx="28" fill="url(#forkGrad)"/>
+  </g>
+</svg>

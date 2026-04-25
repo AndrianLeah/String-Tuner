@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">String Tuner</string>
+    <string name="title_activity_main">String Tuner</string>
+    <string name="package_name">com.accordatore.app</string>
+    <string name="custom_url_scheme">com.accordatore.app</string>
+</resources>
