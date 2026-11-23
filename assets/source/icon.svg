@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="clip-path-1">
+      <path d="M230 0 L794 0 C921.025 0 1024 102.975 1024 230 L1024 794 C1024 921.025 921.025 1024 794 1024 L230 1024 C102.975 1024 0 921.025 0 794 L0 230 C0 102.975 102.975 0 230 0 Z"/>
+    </clipPath>
+    <radialGradient id="radial-gradient-1" cx="410" cy="410" r="720" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a1052"/>
+      <stop offset="0.55" stop-color="#12082a"/>
+      <stop offset="1" stop-color="#050508"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-2" cx="184" cy="225" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-3" cx="860" cy="820" r="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563eb" stop-opacity="0.48"/>
+      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-4" cx="820" cy="160" r="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c026d3" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#c026d3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-5" cx="150" cy="900" r="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="filter-1" filterUnits="userSpaceOnUse" x="156.75" y="156.75" width="710.5" height="710.5" data-vc-blend="screen" color-interpolation-filters="sRGB"><feComponentTransfer in="SourceAlpha"><feFuncA type="linear" slope="255"/></feComponentTransfer><feMorphology operator="dilate" radius="0.25"/><feGaussianBlur stdDeviation="11" result="glow"/><feFlood flood-color="#6dd58c" flood-opacity="0.55"/><feComposite in2="glow" operator="in" result="paint"/><feMerge><feMergeNode in="paint"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="filter-2" filterUnits="userSpaceOnUse" x="373" y="237" width="278" height="550" data-vc-blend="multiply" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="13"/><feOffset dx="0" dy="12" result="shadow"/><feFlood flood-color="#0a0418" flood-opacity="0.55"/><feComposite in2="shadow" operator="in" result="paint"/><feMerge><feMergeNode in="paint"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="linear-gradient-1" x1="512" y1="290" x2="512" y2="734" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#ede6ff"/>
+      <stop offset="1" stop-color="#b89efb"/>
+    </linearGradient>
+    <filter id="filter-3" filterUnits="userSpaceOnUse" x="447.75" y="147.75" width="128.5" height="128.5" data-vc-blend="screen" color-interpolation-filters="sRGB"><feComponentTransfer in="SourceAlpha"><feFuncA type="linear" slope="255"/></feComponentTransfer><feMorphology operator="dilate" radius="0.25"/><feGaussianBlur stdDeviation="10" result="glow"/><feFlood flood-color="#6dd58c" flood-opacity="0.7"/><feComposite in2="glow" operator="in" result="paint"/><feMerge><feMergeNode in="paint"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <title>icon (rounded tile: README, social)</title>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="Background" clip-path="url(#clip-path-1)">
+      <path id="bg_base" data-name="bg base" d="M230 0 L794 0 C921.025 0 1024 102.975 1024 230 L1024 794 C1024 921.025 921.025 1024 794 1024 L230 1024 C102.975 1024 0 921.025 0 794 L0 230 C0 102.975 102.975 0 230 0 Z" fill="url(#radial-gradient-1)"/>
+      <circle id="aurora_violet" data-name="aurora violet" cx="184" cy="225" r="560" fill="url(#radial-gradient-2)"/>
+      <circle id="aurora_blue" data-name="aurora blue" cx="860" cy="820" r="520" fill="url(#radial-gradient-3)"/>
+      <circle id="aurora_magenta" data-name="aurora magenta" cx="820" cy="160" r="440" fill="url(#radial-gradient-4)"/>
+      <circle id="aurora_mint" data-name="aurora mint" cx="150" cy="900" r="360" fill="url(#radial-gradient-5)"/>
+    </g>
+    <circle id="ring_track" data-name="ring track" cx="512" cy="512" r="300" fill="none" stroke="#ffffff" stroke-width="40" stroke-miterlimit="10" opacity="0.12"/>
+    <g filter="url(#filter-1)">
+      <path id="stability_arc" data-name="stability arc" d="M512 212 C677.685 212 812 346.315 812 512 C812 677.685 677.685 812 512 812 C346.315 812 212 677.685 212 512" fill="none" stroke="#6dd58c" stroke-width="40" stroke-linecap="round" stroke-miterlimit="10"/>
+    </g>
+    <g filter="url(#filter-2)">
+      <path id="tuning_fork" data-name="tuning fork" d="M426 316 C426 301.641 437.641 290 452 290 C466.359 290 478 301.641 478 316 L478 520 C478 538.778 493.222 554 512 554 C530.778 554 546 538.778 546 520 L546 316 C546 301.641 557.641 290 572 290 C586.359 290 598 301.641 598 316 L598 520 C598 558.434 572.788 590.98 538 602 L538 708 C538 722.359 526.359 734 512 734 C497.641 734 486 722.359 486 708 L486 602 C451.212 590.98 426 558.434 426 520 Z" fill="url(#linear-gradient-1)"/>
+    </g>
+    <g filter="url(#filter-3)">
+      <circle id="in-tune_dot" data-name="in-tune dot" cx="512" cy="212" r="32" fill="#c9f7d6"/>
+    </g>
+  </g>
+</svg>
