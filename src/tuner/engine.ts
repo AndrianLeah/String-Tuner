@@ -18,7 +18,7 @@ import { centsBetween, foldTowardTarget, isHarmonicOf, median } from './pitch'
 import type { SessionLog } from './sessionLog'
 
 /** Cents window considered "in tune" (±8¢ is comfortable for guitar) */
-const ACCEPT_CENTS = 8
+export const ACCEPT_CENTS = 8
 /** Cents above ACCEPT_CENTS before we consider resetting stability (hysteresis) */
 const STABILITY_RESET_CENTS = 20
 /** How long (ms) pitch must remain outside before stability progress resets */
@@ -38,7 +38,7 @@ const HINT_WINDOW_CENTS = 1200
 /** How long (ms) to hold the 'in-range' hint after pitch drifts slightly out */
 const HINT_GRACE_MS = 250
 /** How long (ms) to keep display alive after the last valid signal frame */
-const SIGNAL_HOLD_MS = 500
+export const SIGNAL_HOLD_MS = 500
 /** Logging interval (ms) — throttles log lines to ~2/s */
 const LOG_INTERVAL_MS = 500
 
@@ -85,6 +85,11 @@ export interface TunerEngine {
 	/** Back to the first string, nothing tuned */
 	reset(): void
 	resetCounters(): void
+	/**
+	 * Blank the reading as the latch-and-fade does (the needle keeps its place). Only what is
+	 * shown changes: the engine never reads `display`, so its analysis is not affected.
+	 */
+	clearDisplay(): void
 }
 
 /** How a pitch that made it through the gates is taken in (see `acceptPitch`) */
@@ -505,6 +510,13 @@ export function createTunerEngine(
 		reset,
 		resetCounters() {
 			for (const key of Object.keys(counters) as (keyof TickCounters)[]) counters[key] = 0
+		},
+		clearDisplay() {
+			display.frequency = null
+			display.cents = null
+			display.hint = null
+			display.stabilityProgress = 0
+			display.signalClarity = 0
 		},
 	}
 }
