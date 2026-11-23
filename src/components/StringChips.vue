@@ -34,7 +34,8 @@ function arrayIdx(di: number): number {
 			:disabled="!isListening"
 			@click="emit('select', arrayIdx(di))"
 		>
-			<span class="chip-num">{{ tuning.strings - di }}</span>
+			<!-- String numbers count from the thinnest (1), which is shown first -->
+			<span class="chip-num">{{ di + 1 }}</span>
 			<span class="chip-note">{{ formatNote(str.note, tuning.preferFlats) }}</span>
 			<span class="chip-octave">{{ str.octave }}</span>
 		</button>

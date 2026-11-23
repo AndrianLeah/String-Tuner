@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ACCEPT_CENTS } from '../tuner/engine'
+
 interface Props {
 	needlePercent: number
 	/** 'idle' | 'in-tune' | 'off' */
@@ -8,13 +10,16 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// The track spans −50¢…+50¢, so 1¢ is 1% of it. The green band is the engine's in-tune window.
+const acceptBand = { left: `${50 - ACCEPT_CENTS}%`, width: `${2 * ACCEPT_CENTS}%` }
 </script>
 
 <template>
 	<div class="meter-wrapper">
 		<div class="meter-track">
-			<!-- ±5¢ acceptance band: 45%–55% of track -->
-			<div class="meter-range" />
+			<!-- in-tune band: ±ACCEPT_CENTS around the centre -->
+			<div class="meter-range" :style="acceptBand" />
 			<!-- centre marker -->
 			<div class="meter-center" />
 			<!-- needle -->
@@ -49,8 +54,6 @@ const props = defineProps<Props>()
 }
 .meter-range {
 	position: absolute;
-	left: 45%;
-	width: 10%;
 	top: -2px;
 	height: 10px;
 	background: color-mix(in srgb, var(--green) 20%, transparent);
