@@ -1,12 +1,8 @@
+// Global styles first: theme tokens, page background and resets. Each component carries its
+// own scoped styles, which come after them.
+import './style.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { i18n } from './i18n'
-import './style.css'
-import './styles/CentsMeter.css'
-import './styles/GuitarTuner.css'
-import './styles/SettingsMenu.css'
-import './styles/StringChips.css'
-import './styles/TunerRing.css'
-import './styles/TuningSelector.css'
 
 createApp(App).use(i18n).mount('#app')
