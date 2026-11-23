@@ -1,42 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
   <defs>
-    <radialGradient id="bg" cx="40%" cy="35%" r="70%">
-      <stop offset="0%" stop-color="#1e0a3c"/>
-      <stop offset="100%" stop-color="#050508"/>
+    <clipPath id="clip-path-1">
+      <path d="M230 0 L794 0 C921.025 0 1024 102.975 1024 230 L1024 794 C1024 921.025 921.025 1024 794 1024 L230 1024 C102.975 1024 0 921.025 0 794 L0 230 C0 102.975 102.975 0 230 0 Z"/>
+    </clipPath>
+    <radialGradient id="radial-gradient-1" cx="410" cy="410" r="720" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a1052"/>
+      <stop offset="0.55" stop-color="#12082a"/>
+      <stop offset="1" stop-color="#050508"/>
     </radialGradient>
-    <radialGradient id="a1" cx="20%" cy="20%" r="60%">
-      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.7"/>
-      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    <radialGradient id="radial-gradient-2" cx="184" cy="225" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="a2" cx="82%" cy="80%" r="55%">
-      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    <radialGradient id="radial-gradient-3" cx="860" cy="820" r="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563eb" stop-opacity="0.48"/>
+      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="a3" cx="78%" cy="16%" r="45%">
-      <stop offset="0%" stop-color="#c026d3" stop-opacity="0.45"/>
-      <stop offset="100%" stop-color="#c026d3" stop-opacity="0"/>
-    </radialGradient>
-    <!-- Fork gradient: top of prongs (y=8) to handle bottom (y=43) -->
-    <linearGradient id="f" x1="24" y1="8" x2="24" y2="43" gradientUnits="userSpaceOnUse">
-      <stop offset="0%"  stop-color="#ffffff"/>
-      <stop offset="40%" stop-color="#ede6ff"/>
-      <stop offset="100%" stop-color="#b89efb"/>
+    <linearGradient id="linear-gradient-1" x1="512" y1="280" x2="512" y2="770" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d2c2ff"/>
     </linearGradient>
   </defs>
-  <!-- Background -->
-  <rect width="48" height="48" rx="11" fill="url(#bg)"/>
-  <rect width="48" height="48" rx="11" fill="url(#a1)"/>
-  <rect width="48" height="48" rx="11" fill="url(#a2)"/>
-  <rect width="48" height="48" rx="11" fill="url(#a3)"/>
-  <!--
-    Fork (centered at x=24):
-      Left prong:   x=14.5, y=8,  w=5, h=19, rx=2.5
-      Right prong:  x=28.5, y=8,  w=5, h=19, rx=2.5
-      U-connector:  x=14.5, y=22, w=19, h=9,  rx=4.5
-      Handle:       x=21.5, y=26, w=5,  h=17, rx=2.5
-  -->
-  <rect x="14.5" y="8"  width="5" height="19" rx="2.5" fill="url(#f)"/>
-  <rect x="28.5" y="8"  width="5" height="19" rx="2.5" fill="url(#f)"/>
-  <rect x="14.5" y="22" width="19" height="9"  rx="4.5" fill="url(#f)"/>
-  <rect x="21.5" y="26" width="5"  height="17" rx="2.5" fill="url(#f)"/>
+  <title>favicon (simplified for 16-48 px)</title>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="Background__favicon_" data-name="Background (favicon)" clip-path="url(#clip-path-1)">
+      <path id="bg_base" data-name="bg base" d="M230 0 L794 0 C921.025 0 1024 102.975 1024 230 L1024 794 C1024 921.025 921.025 1024 794 1024 L230 1024 C102.975 1024 0 921.025 0 794 L0 230 C0 102.975 102.975 0 230 0 Z" fill="url(#radial-gradient-1)"/>
+      <circle id="aurora_violet" data-name="aurora violet" cx="184" cy="225" r="560" fill="url(#radial-gradient-2)"/>
+      <circle id="aurora_blue" data-name="aurora blue" cx="860" cy="820" r="520" fill="url(#radial-gradient-3)"/>
+    </g>
+    <circle id="ring_track" data-name="ring track" cx="512" cy="512" r="330" fill="none" stroke="#ffffff" stroke-width="84" stroke-miterlimit="10" opacity="0.16"/>
+    <path id="stability_arc" data-name="stability arc" d="M512 182 C694.254 182 842 329.746 842 512 C842 694.254 694.254 842 512 842 C329.746 842 182 694.254 182 512" fill="none" stroke="#6dd58c" stroke-width="84" stroke-linecap="round" stroke-miterlimit="10"/>
+    <path id="tuning_fork" data-name="tuning fork" d="M382 330 C382 302.386 404.386 280 432 280 C459.614 280 482 302.386 482 330 L482 520 C482 536.584 495.416 550 512 550 C528.584 550 542 536.584 542 520 L542 330 C542 302.386 564.386 280 592 280 C619.614 280 642 302.386 642 330 L642 520 C642 574.065 608.973 620.435 562 640.032 L562 720 C562 747.614 539.614 770 512 770 C484.386 770 462 747.614 462 720 L462 640.032 C415.027 620.435 382 574.065 382 520 Z" fill="url(#linear-gradient-1)"/>
+  </g>
 </svg>
