@@ -107,7 +107,7 @@ function handleSelect(id: string) {
 				>
 					<div class="card-top">
 						<span class="card-name">{{ tuning.name }}</span>
-						<span class="card-strings">{{ tuning.strings }}str</span>
+						<span class="card-strings">{{ tuning.strings }} {{ t('tuner.strSuffix') }}</span>
 						<span v-if="isCustom(tuning.id)" class="badge-custom">{{ t('selector.custom') }}</span>
 						<button
 							v-if="isCustom(tuning.id)"

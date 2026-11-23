@@ -8,7 +8,7 @@
  */
 import { readonly, ref, watch, type Ref } from 'vue'
 import type { TuningPreset } from '../data/tunings'
-import { createTunerEngine, type TunerHint } from '../tuner/engine'
+import { createTunerEngine, SIGNAL_HOLD_MS, type TunerHint } from '../tuner/engine'
 import { createSessionLog } from '../tuner/sessionLog'
 import { useAudioCapture, type AudioFrame } from './useAudioCapture'
 
@@ -85,12 +85,30 @@ export function useTuner(activeTuning: Ref<TuningPreset>) {
 			clearTimeout(allTunedResetTimer)
 			allTunedResetTimer = null
 		}
+		clearSilenceTimer()
 		sync()
+	}
+
+	// Below its noise gate useAudioCapture sends no frames at all, so the engine's own
+	// latch-and-fade never runs in true silence. Blank the reading after the same hold time
+	// once frames stop coming; the engine's analysis state is left as it is.
+	let silenceTimer: ReturnType<typeof setTimeout> | null = null
+	function clearSilenceTimer() {
+		if (silenceTimer !== null) {
+			clearTimeout(silenceTimer)
+			silenceTimer = null
+		}
 	}
 
 	function processTick(frame: AudioFrame) {
 		engine.process(frame, performance.now())
 		sync()
+		clearSilenceTimer()
+		silenceTimer = setTimeout(() => {
+			silenceTimer = null
+			engine.clearDisplay()
+			sync()
+		}, SIGNAL_HOLD_MS)
 	}
 
 	/**

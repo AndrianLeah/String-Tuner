@@ -136,10 +136,7 @@ describe('a string out of tune', () => {
 })
 
 describe('silence', () => {
-	// Known: below its RMS gate useAudioCapture sends no frames at all, so useTuner's 500 ms
-	// latch-and-fade never runs: "Hold steady…" and a half-full ring stay on screen while
-	// nothing is playing. `it.fails` passes while that is so; make it `it` once it is fixed.
-	it.fails('clears the reading and the ring within a second after the string stops', async () => {
+	it('clears the reading and the ring within a second after the string stops', async () => {
 		const guitar = preset('std6')
 		const instrument = new VirtualInstrument()
 		installFakeAudio(instrument)

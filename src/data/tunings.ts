@@ -223,7 +223,8 @@ export const PRESET_TUNINGS: readonly TuningPreset[] = [
 		name: 'Drop D 5',
 		strings: 5,
 		category: 'bass',
-		tuning: [s('B', 0), s('E', 1), s('A', 1), s('D', 2), s('G', 2)],
+		// Standard 5 with the E string dropped a whole tone to D
+		tuning: [s('B', 0), s('D', 1), s('A', 1), s('D', 2), s('G', 2)],
 	},
 	{
 		id: 'bass_std6',

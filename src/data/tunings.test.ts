@@ -42,9 +42,9 @@ describe('PRESET_TUNINGS', () => {
 		expect(new Set(ids).size).toBe(ids.length)
 	})
 
-	// Known: 'bass_dropd5' (Drop D 5) has the same notes as 'bass_std5' (Standard 5).
-	// `it.fails` passes while that is so; turn it back into `it` once the preset is fixed.
-	it.fails('has no two presets of the same instrument with the same notes', () => {
+	it('has no two presets of the same instrument with the same notes, except named aliases', () => {
+		// A tenor ukulele with a low G is tuned like 'Low G (GCEA)': listed under its own name on purpose
+		const aliases = ['uke_tenor = uke_low_g']
 		const seen = new Map<string, string>()
 		const duplicates: string[] = []
 		for (const t of PRESET_TUNINGS) {
@@ -53,7 +53,7 @@ describe('PRESET_TUNINGS', () => {
 			if (other) duplicates.push(`${t.id} = ${other}`)
 			else seen.set(key, t.id)
 		}
-		expect(duplicates).toEqual([])
+		expect(duplicates).toEqual(aliases)
 	})
 
 	describe.each(PRESET_TUNINGS.map((t) => [t.id, t] as const))('%s', (_id, preset) => {

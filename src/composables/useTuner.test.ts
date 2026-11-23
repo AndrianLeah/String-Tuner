@@ -215,6 +215,35 @@ describe('noisy readings', () => {
 	})
 })
 
+describe('silence (no frames at all: the capture gates them out)', () => {
+	const E2 = GUITAR.tuning[0].frequency
+
+	it('blanks the reading 500 ms after the last frame, keeping the needle', async () => {
+		const { tuner } = await setup()
+		await feed(note(E2, 4), 600)
+		expect(tuner.hint.value).toBe('in-range')
+
+		await vi.advanceTimersByTimeAsync(450)
+		expect(tuner.hint.value).toBe('in-range')
+
+		await vi.advanceTimersByTimeAsync(100)
+		expect(tuner.hint.value).toBeNull()
+		expect(tuner.frequency.value).toBeNull()
+		expect(tuner.stabilityProgress.value).toBe(0)
+		expect(tuner.needleCents.value).not.toBeNull()
+	})
+
+	it('shows the reading again with the next frame', async () => {
+		const { tuner } = await setup()
+		await feed(note(E2), 300)
+		await vi.advanceTimersByTimeAsync(800)
+		expect(tuner.frequency.value).toBeNull()
+
+		await feed(note(E2), 100)
+		expect(tuner.frequency.value).toBe(82.4)
+	})
+})
+
 describe('moving through the strings', () => {
 	it('after the last string: "all in tune", then stops by itself 2 s later', async () => {
 		const { tuner } = await setup()

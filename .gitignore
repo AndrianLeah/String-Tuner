@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Design mockups: kept locally, never committed
+mockup/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
