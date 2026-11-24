@@ -7,6 +7,7 @@
 		"hintTooLow": "调高",
 		"hintInRange": "保持…",
 		"start": "开始",
+		"starting": "正在启动…",
 		"stop": "停止"
 	},
 	"selector": {
@@ -17,7 +18,8 @@
 		"violin": "小提琴",
 		"custom": "自定义",
 		"searchPlaceholder": "搜索调音…",
-		"noResults": "未找到调音方式"
+		"noResults": "未找到调音方式",
+		"delete": "删除 {name}"
 	},
 	"settings": {
 		"title": "设置",
@@ -25,5 +27,9 @@
 		"light": "浅色",
 		"dark": "深色",
 		"language": "语言"
+	},
+	"common": {
+		"close": "关闭",
+		"clear": "清除"
 	}
 }

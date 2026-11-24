@@ -1,0 +1,5 @@
+# Design sources and boards are large binaries: Git LFS keeps them out of the normal history.
+# Only the mockup folder is covered, so the app's own assets stay ordinary files the build can read.
+*.figcraft filter=lfs diff=lfs merge=lfs -text
+mockup/**/*.vectorcraft filter=lfs diff=lfs merge=lfs -text
+mockup/**/*.png filter=lfs diff=lfs merge=lfs -text

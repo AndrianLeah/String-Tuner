@@ -1,0 +1,12 @@
+// The design system: import components from here, and import './ui/index.css' once at start-up.
+export { default as UiButton } from './UiButton.vue'
+export { default as UiIcon } from './UiIcon.vue'
+export { default as UiIconButton } from './UiIconButton.vue'
+export { default as UiListRow } from './UiListRow.vue'
+export { default as UiSearchField } from './UiSearchField.vue'
+export { default as UiSection } from './UiSection.vue'
+export { default as UiSegmentedControl, type SegmentOption } from './UiSegmentedControl.vue'
+export { default as UiSheet } from './UiSheet.vue'
+export { default as UiStatusPill } from './UiStatusPill.vue'
+export { default as UiSurface } from './UiSurface.vue'
+export { ICONS, type IconName } from './icons'

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { formatNote, type TuningPreset } from '../data/tunings'
+import { UiIcon, UiSurface } from '../ui'
 
 interface Props {
 	tuning: TuningPreset
@@ -19,18 +20,24 @@ const displayStrings = computed(() => [...props.tuning.tuning].reverse())
 function arrayIdx(di: number): number {
 	return props.tuning.tuning.length - 1 - di
 }
+
+// The string being tuned. Once every string is in tune the last one stays locked: show it as tuned
+function isLocked(di: number): boolean {
+	const index = arrayIdx(di)
+	return props.isListening && props.lockedStringIndex === index && !props.tunedStrings.has(index)
+}
 </script>
 
 <template>
-	<div class="strings-display">
+	<!-- One glass track holds every chip: no glass on glass -->
+	<UiSurface class="strings-display" material="glass" radius="xl">
 		<button
 			v-for="(str, di) in displayStrings"
 			:key="di"
-			class="string-chip"
-			:class="{
-				tuned: tunedStrings.has(arrayIdx(di)),
-				locked: isListening && lockedStringIndex === arrayIdx(di),
-			}"
+			type="button"
+			class="string-chip ui-pressable"
+			:class="{ tuned: tunedStrings.has(arrayIdx(di)), locked: isLocked(di) }"
+			:aria-pressed="isLocked(di)"
 			:disabled="!isListening"
 			@click="emit('select', arrayIdx(di))"
 		>
@@ -38,129 +45,81 @@ function arrayIdx(di: number): number {
 			<span class="chip-num">{{ di + 1 }}</span>
 			<span class="chip-note">{{ formatNote(str.note, tuning.preferFlats) }}</span>
 			<span class="chip-octave">{{ str.octave }}</span>
+			<!-- Tuned is said with a check too, not by colour alone -->
+			<UiIcon
+				v-if="tunedStrings.has(arrayIdx(di))"
+				class="chip-check"
+				name="check"
+				:size="14"
+				:stroke-width="3.4"
+			/>
 		</button>
-	</div>
+	</UiSurface>
 </template>
 
 <style scoped>
 .strings-display {
 	display: flex;
-	gap: 0.4rem;
-	flex-wrap: wrap;
-	justify-content: center;
+	gap: var(--space-1);
+	padding: var(--space-1);
 }
 
 .string-chip {
+	flex: 1 1 0;
+	min-width: 0;
+	height: var(--chip-height, 68px);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 0.35rem 0.5rem;
-	border-radius: 9px;
-	background: var(--surface-low);
-	border: 2px solid var(--border-chip);
-	cursor: pointer;
-	min-width: 34px;
+	justify-content: center;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-lg);
+	background: transparent;
+	color: var(--text-primary);
+	font-variant-numeric: tabular-nums;
 	transition:
-		border-color 0.15s,
-		background 0.15s,
-		transform 0.1s;
-}
-.string-chip:not(:disabled):hover {
-	background: var(--surface-raised);
-	border-color: var(--text-muted);
-}
-.string-chip:not(:disabled):active {
-	transform: scale(0.93);
-}
-.string-chip:disabled {
-	cursor: default;
+		background var(--duration-fast),
+		box-shadow var(--duration-fast),
+		transform var(--duration-fast) var(--ease-out),
+		opacity var(--duration-fast);
 }
 
-.string-chip.tuned {
-	background: color-mix(in srgb, var(--green) 15%, transparent);
-	border-color: var(--green);
-}
-.string-chip.locked {
-	border-color: var(--needle);
-	background: var(--surface-raised);
-}
-.string-chip.tuned.locked {
-	background: color-mix(in srgb, var(--green) 20%, transparent);
-	border-color: var(--green-bright);
-}
-.string-chip.pinned {
-	border-color: var(--amber) !important;
-	background: color-mix(in srgb, var(--amber) 12%, transparent) !important;
-}
-.string-chip.pinned .chip-note {
-	color: var(--amber) !important;
-}
-.string-chip.pinned .chip-num {
-	color: var(--amber-dark) !important;
-}
-/* Ghost detector "searching" state — dimmed pulse while confidence builds */
-.string-chip.searching {
-	border-color: var(--text-muted);
-	background: var(--surface-raised);
-	opacity: 0.65;
-	animation: chip-searching 0.9s ease-in-out infinite alternate;
-}
-.string-chip.searching .chip-note {
-	color: var(--text-secondary);
-}
-@keyframes chip-searching {
-	from {
-		opacity: 0.45;
-	}
-	to {
-		opacity: 0.8;
-	}
-}
-
-.chip-num {
-	font-size: 0.6rem;
-	color: var(--text-faint);
-	line-height: 1;
-}
-.chip-note {
-	font-size: 0.85rem;
-	font-weight: 700;
-	color: var(--chip-note);
-	line-height: 1.3;
-}
+.chip-num,
 .chip-octave {
-	font-size: 0.58rem;
-	color: var(--chip-octave);
-	line-height: 1;
+	color: var(--text-tertiary);
+	font-size: var(--font-size-caption-2);
+	font-weight: var(--font-weight-semibold);
+	line-height: 15px;
 }
 
-.string-chip.tuned .chip-note {
+.chip-note {
+	font-size: 22px;
+	font-weight: var(--font-weight-bold);
+	line-height: 28px;
+}
+
+.chip-check {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+}
+
+/* The string being tuned: accent tint and outline */
+.string-chip.locked {
+	background: var(--accent-tint);
+	box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.string-chip.locked .chip-num,
+.string-chip.locked .chip-octave {
+	color: var(--accent);
+}
+
+/* A string already in tune: green, with a check */
+.string-chip.tuned {
+	background: var(--green-tint);
+}
+.string-chip.tuned > * {
 	color: var(--green);
-}
-.string-chip.tuned .chip-num {
-	color: var(--green-dark);
-}
-.string-chip.locked .chip-note {
-	color: var(--needle);
-}
-.string-chip.locked .chip-num {
-	color: var(--text-secondary);
-}
-
-/* ── Floating card breakpoint ────────────────────────────────────────────── */
-@media (min-width: 640px) and (min-height: 640px) {
-	.string-chip {
-		min-width: 40px;
-		padding: 0.45rem 0.65rem;
-	}
-	.chip-num {
-		font-size: 0.68rem;
-	}
-	.chip-note {
-		font-size: 1rem;
-	}
-	.chip-octave {
-		font-size: 0.65rem;
-	}
 }
 </style>
