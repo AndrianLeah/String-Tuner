@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import {
-	ArrowDownwardOutlined,
-	ArrowRightOutlined,
-	ArrowUpwardOutlined,
-	CheckCircle1Outlined,
-	CheckOutlined,
-	Gear1Outlined,
-} from '@lineiconshq/free-icons'
-import { Lineicons } from '@lineiconshq/vue-lineicons'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useConfig } from '../composables/useConfig'
 import { useTuner } from '../composables/useTuner'
 import { formatNote } from '../data/tunings'
+import { UiButton, UiIconButton, UiStatusPill, UiSurface, type IconName } from '../ui'
+import AppBackground from './AppBackground.vue'
 import CentsMeter from './CentsMeter.vue'
 import SettingsMenu from './SettingsMenu.vue'
 import StringChips from './StringChips.vue'
 import TunerRing from './TunerRing.vue'
+import TuningPill from './TuningPill.vue'
 import TuningSelector from './TuningSelector.vue'
 
 const { t } = useI18n()
@@ -40,6 +34,18 @@ const {
 const selectorOpen = ref(false)
 const settingsOpen = ref(false)
 
+// Start waits for the microphone permission: show it as busy meanwhile
+const starting = ref(false)
+async function toggle() {
+	if (isListening.value) return stop()
+	starting.value = true
+	try {
+		await start()
+	} finally {
+		starting.value = false
+	}
+}
+
 // Clamp needleCents (float, holds on signal loss) to ±50 → 0–100% for needle.
 // Falls back to 50% (centre) only before the first valid reading.
 const needlePercent = computed(() => {
@@ -60,27 +66,29 @@ const statusClass = computed(() => {
 	if (hint.value === 'in-range') return 'in-tune'
 	return 'off'
 })
+
+// The direction hint: an arrow and a word, orange when off, green when in range
+const HINTS: Record<string, { tone: 'success' | 'warning'; icon: IconName; text: string }> = {
+	'too-high': { tone: 'warning', icon: 'arrow-down', text: 'tuner.hintTooHigh' },
+	'too-low': { tone: 'warning', icon: 'arrow-up', text: 'tuner.hintTooLow' },
+	'in-range': { tone: 'success', icon: 'check', text: 'tuner.hintInRange' },
+}
+const hintPill = computed(() => (hint.value ? HINTS[hint.value] : undefined))
 </script>
 
 <template>
-	<div class="tuner">
-		<div class="center-card">
-			<!-- Top bar: tuning selector + settings button -->
-			<div class="top-bar">
-				<button class="tuning-bar" @click="selectorOpen = true">
-					<span class="tuning-name">{{ activeTuning.name }}</span>
-					<span class="tuning-strings">{{ activeTuning.strings }} {{ t('tuner.strSuffix') }}</span>
-					<span class="tuning-arrow icon"
-						><Lineicons :icon="ArrowRightOutlined" color="currentColor"
-					/></span>
-				</button>
-				<button class="settings-btn" :aria-label="t('settings.title')" @click="settingsOpen = true">
-					<span class="icon"><Lineicons :icon="Gear1Outlined" color="currentColor" /></span>
-				</button>
-			</div>
+	<AppBackground :celebrate="allTuned" />
 
-			<!-- String chips -->
+	<div class="tuner" :class="{ 'is-complete': allTuned }">
+		<UiSurface as="main" class="tuner-card" material="thin" radius="sheet">
+			<!-- Top bar: tuning + settings -->
+			<header class="top-bar">
+				<TuningPill :tuning="activeTuning" @click="selectorOpen = true" />
+				<UiIconButton icon="gear" :label="t('settings.title')" @click="settingsOpen = true" />
+			</header>
+
 			<StringChips
+				class="chips"
 				:tuning="activeTuning"
 				:is-listening="isListening"
 				:tuned-strings="tunedStrings"
@@ -88,398 +96,330 @@ const statusClass = computed(() => {
 				@select="selectString"
 			/>
 
-			<!-- All-strings-tuned banner -->
-			<div v-if="allTuned" class="all-tuned">
-				<div class="all-tuned-icon">
-					<span class="icon"><Lineicons :icon="CheckCircle1Outlined" color="currentColor" /></span>
-				</div>
-				<div class="all-tuned-text">{{ t('tuner.allTuned') }}</div>
-			</div>
+			<!-- Note, stability ring, string and frequency, direction -->
+			<section class="ring-section">
+				<TunerRing
+					:stability-progress="stabilityProgress"
+					:note="noteDisplay"
+					:octave="octaveDisplay"
+					:status="statusClass"
+					:complete="allTuned"
+				/>
 
-			<!-- Active tuning view -->
-			<template v-else>
-				<!-- Note + stability ring + info -->
-				<div class="ring-section">
-					<TunerRing
-						:stability-progress="stabilityProgress"
-						:note="noteDisplay"
-						:octave="octaveDisplay"
-						:status="statusClass"
-					/>
-
-					<!-- String number + Hz -->
-					<div class="info-row">
+				<p v-if="allTuned" class="all-tuned" role="status">{{ t('tuner.allTuned') }}</p>
+				<template v-else>
+					<p class="info-row">
 						<span class="string-label">{{ t('tuner.string', { n: guitarStringNum }) }}</span>
-						<span class="frequency">{{ frequency !== null ? `${frequency} Hz` : '—' }}</span>
-					</div>
-
-					<!-- Direction hint -->
-					<div class="hint" :class="hint ?? 'idle'">
-						<template v-if="hint === 'too-high'"
-							><span class="icon"
-								><Lineicons :icon="ArrowDownwardOutlined" color="currentColor"
-							/></span>
-							{{ t('tuner.hintTooHigh') }}</template
-						>
-						<template v-else-if="hint === 'too-low'"
-							><span class="icon"
-								><Lineicons :icon="ArrowUpwardOutlined" color="currentColor"
-							/></span>
-							{{ t('tuner.hintTooLow') }}</template
-						>
-						<template v-else-if="hint === 'in-range'"
-							><span class="icon"><Lineicons :icon="CheckOutlined" color="currentColor" /></span>
-							{{ t('tuner.hintInRange') }}</template
-						>
-						<template v-else>&nbsp;</template>
-					</div>
-				</div>
-
-				<!-- Meter + button -->
-				<div class="controls-section">
-					<CentsMeter
-						:needle-percent="needlePercent"
-						:status="statusClass"
-						:clarity="signalClarity"
-					/>
-
-					<p v-if="error" class="error">{{ error }}</p>
-
-					<button
-						class="toggle-btn"
-						:class="{ active: isListening }"
-						@click="isListening ? stop() : start()"
+						<span class="info-sep" aria-hidden="true" />
+						<span class="frequency">{{
+							frequency !== null ? `${frequency.toFixed(1)} Hz` : '—'
+						}}</span>
+					</p>
+					<UiStatusPill
+						class="hint"
+						:tone="hintPill?.tone"
+						:icon="hintPill?.icon"
+						:hidden="!hintPill"
 					>
-						{{ isListening ? t('tuner.stop') : t('tuner.start') }}
-					</button>
-				</div>
-			</template>
-		</div>
+						{{ hintPill ? t(hintPill.text) : '' }}
+					</UiStatusPill>
+				</template>
+			</section>
+
+			<!-- Meter + Start/Stop, near the thumb -->
+			<section v-if="!allTuned" class="controls">
+				<CentsMeter
+					:needle-percent="needlePercent"
+					:status="statusClass"
+					:clarity="signalClarity"
+				/>
+
+				<p v-if="error" class="error" role="alert">{{ error }}</p>
+
+				<UiButton
+					:variant="isListening ? 'glass' : 'primary'"
+					:loading="starting"
+					block
+					@click="toggle"
+				>
+					{{ starting ? t('tuner.starting') : isListening ? t('tuner.stop') : t('tuner.start') }}
+				</UiButton>
+			</section>
+		</UiSurface>
 	</div>
 
 	<Teleport to="body">
-		<Transition name="sheet">
+		<Transition name="ui-sheet">
 			<TuningSelector v-if="selectorOpen" @close="selectorOpen = false" />
 		</Transition>
-		<Transition name="sheet">
+		<Transition name="ui-sheet">
 			<SettingsMenu v-if="settingsOpen" @close="settingsOpen = false" />
 		</Transition>
 	</Teleport>
 </template>
 
 <style scoped>
-/* ── Layout wrapper ─────────────────────────────────────────────────────── */
+/*
+ * Layouts (see mockup/README.md):
+ *   phone portrait    one column, controls at the bottom near the thumb
+ *   phone landscape   controls on the left, the ring on the right
+ *   tablet portrait   a card of material, one column
+ *   tablet landscape  a wide card: the ring on the left, chips and controls on the right
+ *   desktop           as tablet landscape, larger
+ */
+
+/*
+ * Components are sized through their tokens, never restyled here:
+ *   --ring-size (TunerRing), --chip-height (StringChips),
+ *   --status-pill-height and --status-pill-font-size (UiStatusPill)
+ */
+
+/* ── Phone portrait (default) ───────────────────────────────────────────── */
 .tuner {
+	--ring-size: clamp(
+		160px,
+		min(
+			100vw - 120px,
+			100dvh - 470px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+		),
+		260px
+	);
+	flex: 1;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
 	justify-content: center;
 	min-height: 100dvh;
-	gap: 0.9rem;
-	color: var(--text-primary);
-	font-family: 'Elms Sans', system-ui, sans-serif;
-	box-sizing: border-box;
-	width: 100%;
+	padding: calc(env(safe-area-inset-top, 0px) + var(--space-4))
+		calc(env(safe-area-inset-right, 0px) + var(--space-5))
+		max(env(safe-area-inset-bottom, 0px), var(--space-5))
+		calc(env(safe-area-inset-left, 0px) + var(--space-5));
 }
 
-/* ── Top bar ─────────────────────────────────────────────────────────────── */
+.tuner-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: var(--space-4);
+	width: 100%;
+	max-width: 480px;
+}
+
+/* On a phone the card is the screen itself: no material of its own */
+@media (max-width: 639px), (max-height: 639px) {
+	.tuner-card {
+		background: none;
+		border-color: transparent;
+		border-radius: 0;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+}
+
 .top-bar {
+	grid-area: top;
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	justify-content: center;
-	width: 100%;
+	gap: var(--space-3);
 }
 
-/* ── Central glass card — fullscreen by default ─────────────────────────── */
-/* border-radius and max-width are added only in the floating-card query.    */
-.center-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.9rem;
-	width: 100%;
-	min-height: 100dvh;
-	justify-content: center;
-	padding: max(env(safe-area-inset-top), 1.25rem) max(env(safe-area-inset-right), 1.5rem)
-		max(env(safe-area-inset-bottom), 1.5rem) max(env(safe-area-inset-left), 1.5rem);
-	background: var(--card-bg);
-	backdrop-filter: var(--card-blur);
-	-webkit-backdrop-filter: var(--card-blur);
-	box-shadow: var(--card-shadow);
+.chips {
+	grid-area: chips;
 }
 
-/* ── Ring section ────────────────────────────────────────────────────────── */
 .ring-section {
+	grid-area: ring;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 }
 
-/* ── Controls section (meter + button stacked) ───────────────────────────── */
-.controls-section {
+.controls {
+	grid-area: controls;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	gap: 0.75rem;
-	width: 100%;
-	max-width: 320px;
+	gap: var(--space-4);
 }
 
-/* ── Tuning bar ──────────────────────────────────────────────────────────── */
-.tuning-bar {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	background: rgba(255, 255, 255, 0.07);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 50px;
-	padding: 0.45rem 1.1rem;
-	cursor: pointer;
-	color: var(--text-secondary);
-	transition:
-		background 0.15s,
-		border-color 0.15s,
-		color 0.15s;
-}
-.tuning-bar:hover {
-	background: rgba(255, 255, 255, 0.13);
-	border-color: rgba(255, 255, 255, 0.2);
-	color: var(--text-primary);
-}
-.tuning-name {
-	font-size: 0.9rem;
-	font-weight: 500;
-}
-.tuning-strings {
-	font-size: 0.72rem;
-	color: var(--text-faint);
-}
-.tuning-arrow {
-	font-size: 1rem;
-	color: var(--text-faint);
-	margin-left: auto;
-}
-
-/* ── Settings button ────────────────────────────────────────────────────── */
-.settings-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 50%;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	background: rgba(255, 255, 255, 0.07);
-	color: var(--text-secondary);
-	font-size: 1rem;
-	cursor: pointer;
-	flex-shrink: 0;
-	transition:
-		background 0.15s,
-		border-color 0.15s,
-		color 0.15s;
-}
-.settings-btn:hover {
-	background: rgba(255, 255, 255, 0.14);
-	border-color: rgba(255, 255, 255, 0.22);
-	color: var(--text-primary);
-}
-
-/* ── All tuned ───────────────────────────────────────────────────────────── */
-.all-tuned {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 2rem 0;
-}
-.all-tuned-icon {
-	font-size: 4rem;
-	color: var(--green);
-	line-height: 1;
-}
-.all-tuned-text {
-	font-size: 1.1rem;
-	font-weight: 500;
-	color: var(--green);
-	letter-spacing: 0.05em;
-}
-
-/* ── Info row ────────────────────────────────────────────────────────────── */
 .info-row {
 	display: flex;
-	gap: 1rem;
 	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--font-size-subhead);
+	line-height: 20px;
+	font-variant-numeric: tabular-nums;
 }
 .string-label {
-	font-size: 0.8rem;
-	color: var(--text-faint);
+	color: var(--text-secondary);
+	font-weight: var(--font-weight-semibold);
+}
+.info-sep {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--text-tertiary);
 }
 .frequency {
-	font-size: 0.8rem;
-	color: var(--text-dim);
-	min-width: 70px;
-	text-align: right;
+	color: var(--text-tertiary);
+	font-weight: var(--font-weight-medium);
 }
 
-/* ── Hint ────────────────────────────────────────────────────────────────── */
-.hint {
-	font-size: 0.95rem;
-	font-weight: 600;
-	min-height: 1.4rem;
-	letter-spacing: 0.03em;
-	transition: color 0.15s;
-	color: var(--text-dim);
-}
-.hint.too-high {
-	color: var(--red);
-}
-.hint.too-low {
-	color: var(--blue);
-}
-.hint.in-range {
+.all-tuned {
 	color: var(--green);
-}
-
-/* ── Error ───────────────────────────────────────────────────────────────── */
-.error {
-	color: var(--red);
-	font-size: 0.8rem;
+	font-size: var(--font-size-title-2);
+	font-weight: var(--font-weight-bold);
 	text-align: center;
-	margin: 0;
 }
 
-/* ── Start/Stop ──────────────────────────────────────────────────────────── */
-.toggle-btn {
-	margin-top: 0.5rem;
-	padding: 0.9rem 3.5rem;
-	font-size: 1rem;
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	border: none;
-	border-radius: 50px;
-	cursor: pointer;
-	background: var(--accent-dim);
-	color: var(--accent);
-	transition:
-		background 0.2s,
-		transform 0.1s;
-}
-.toggle-btn:active {
-	transform: scale(0.97);
-}
-.toggle-btn.active {
-	background: var(--red-stop);
-	color: #fff;
+.error {
+	color: var(--error);
+	font-size: var(--font-size-footnote);
+	font-weight: var(--font-weight-semibold);
+	text-align: center;
 }
 
-/* ── Sheet transition ────────────────────────────────────────────────────── */
-.sheet-enter-active,
-.sheet-leave-active {
-	transition:
-		opacity 0.2s,
-		transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+/* All in tune: the ring and the message take the space of the controls */
+.is-complete .tuner-card {
+	justify-content: flex-start;
 }
-.sheet-enter-from,
-.sheet-leave-to {
-	opacity: 0;
-	transform: translateY(100%);
+.is-complete .ring-section {
+	flex: 1;
+	justify-content: center;
+	gap: var(--space-6);
 }
 
-/* ── Fullscreen: when either dimension is too small for a floating card ───── */
-/* Fires when width < 640 OR height < 640 — already the default above.       */
-/* This block resets .tuner layout for the fullscreen case.                  */
-@media (max-width: 639px), (max-height: 639px) {
-	.tuner {
-		gap: 0;
-		align-items: stretch;
-		justify-content: stretch;
-	}
-}
-
-/* ── Landscape short: two-column grid ───────────────────────────────────── */
+/* ── Phone landscape ────────────────────────────────────────────────────── */
 @media (orientation: landscape) and (max-height: 639px) {
-	.center-card {
+	.tuner {
+		--ring-size: clamp(130px, calc(100dvh - 160px), 220px);
+		padding: max(env(safe-area-inset-top, 0px), var(--space-4))
+			max(env(safe-area-inset-right, 0px), var(--space-8))
+			max(env(safe-area-inset-bottom, 0px), var(--space-5))
+			max(env(safe-area-inset-left, 0px), var(--space-8));
+	}
+	.tuner-card {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: auto 1fr auto;
+		grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+		grid-template-rows: auto auto auto;
 		grid-template-areas:
-			'topbar   topbar'
-			'chips    ring'
+			'top ring'
+			'chips ring'
 			'controls ring';
-		align-items: start;
-		padding: 0.75rem 1.25rem;
-		gap: 0.4rem 1.5rem;
-		justify-content: unset;
-	}
-	.top-bar {
-		grid-area: topbar;
-	}
-	.strings-display {
-		grid-area: chips;
-		justify-content: flex-start;
+		align-content: space-between;
+		column-gap: var(--space-8);
+		row-gap: var(--space-4);
+		max-width: 800px;
 	}
 	.ring-section {
-		grid-area: ring;
-		grid-row: 2 / 4;
 		align-self: center;
-		justify-self: center;
 	}
-	.controls-section {
-		grid-area: controls;
-		max-width: none;
-		align-self: end;
+	.is-complete .tuner-card {
+		grid-template-areas:
+			'top ring'
+			'chips ring';
+		align-content: start;
+	}
+	.is-complete .ring-section {
+		gap: var(--space-3);
 	}
 	.all-tuned {
-		grid-column: 1 / -1;
-		padding: 1rem 0;
+		font-size: var(--font-size-headline);
 	}
-	.ring-wrapper {
-		width: 140px;
-		height: 140px;
-	}
-	:deep(.note-name) {
-		font-size: 2.75rem;
-	}
-	:deep(.note-octave) {
-		font-size: 1.1rem;
-	}
-	.toggle-btn {
-		padding: 0.7rem 2.5rem;
-		font-size: 0.9rem;
+	.tuner-card {
+		--chip-height: 66px;
 	}
 }
 
-/* ── Floating card: both dimensions ≥640px ──────────────────────────────── */
+/* ── Tablet and desktop: a centred card of material ─────────────────────── */
 @media (min-width: 640px) and (min-height: 640px) {
 	.tuner {
-		padding: max(env(safe-area-inset-top), 1rem) max(env(safe-area-inset-right), 1.25rem)
-			max(env(safe-area-inset-bottom), 1.5rem) max(env(safe-area-inset-left), 1.25rem);
+		align-items: center;
+		padding: max(env(safe-area-inset-top, 0px), var(--space-10))
+			max(env(safe-area-inset-right, 0px), var(--space-10))
+			max(env(safe-area-inset-bottom, 0px), var(--space-10))
+			max(env(safe-area-inset-left, 0px), var(--space-10));
 	}
-	.center-card {
-		min-height: auto;
-		max-width: 500px;
-		border-radius: 28px;
-		padding: 2rem 2.5rem 2.25rem;
-		gap: 1.25rem;
+	.tuner-card {
+		--chip-height: 84px;
+		justify-content: flex-start;
+		gap: var(--space-8);
+		max-width: 560px;
+		padding: var(--space-8);
 	}
-	.controls-section {
-		max-width: 380px;
+	.ring-section {
+		--status-pill-height: 50px;
+		--status-pill-font-size: 20px;
+		gap: var(--space-4);
 	}
-	.tuning-name {
-		font-size: 1.05rem;
+	.info-row {
+		font-size: 19px;
+		line-height: 26px;
 	}
-	.tuning-strings {
-		font-size: 0.82rem;
+}
+
+/* Tablet portrait */
+@media (min-width: 640px) and (min-height: 640px) and (orientation: portrait) {
+	.tuner {
+		--ring-size: clamp(220px, calc(100dvh - 700px), 325px);
 	}
-	.string-label,
-	.frequency {
-		font-size: 0.92rem;
+}
+
+/* Tablet landscape and desktop: two zones */
+@media (min-width: 640px) and (min-height: 640px) and (orientation: landscape) {
+	.tuner {
+		--ring-size: clamp(220px, calc(100dvh - 400px), 351px);
 	}
-	.all-tuned-text {
-		font-size: 1.25rem;
+	.tuner-card {
+		display: grid;
+		grid-template-columns: var(--ring-size) minmax(0, 1fr);
+		grid-template-rows: auto 1fr auto auto 1fr;
+		grid-template-areas:
+			'top top'
+			'ring .'
+			'ring chips'
+			'ring controls'
+			'ring .';
+		column-gap: var(--space-12);
+		row-gap: 0;
+		max-width: 1000px;
+	}
+	.top-bar {
+		margin-bottom: var(--space-8);
+	}
+	.ring-section {
+		align-self: center;
+	}
+	.chips {
+		margin-bottom: 28px;
+	}
+	.is-complete .tuner-card {
+		grid-template-rows: auto 1fr auto 1fr;
+		grid-template-areas:
+			'top top'
+			'ring .'
+			'ring chips'
+			'ring .';
+	}
+}
+
+@media (min-width: 1280px) and (min-height: 760px) and (orientation: landscape) {
+	.tuner {
+		--ring-size: clamp(260px, calc(100dvh - 420px), 404px);
+	}
+	.tuner-card {
+		--chip-height: 96px;
+		max-width: 1120px;
+		padding: var(--space-10);
+	}
+	.chips {
+		margin-bottom: var(--space-8);
+	}
+	.ring-section {
+		--status-pill-height: 62px;
+		--status-pill-font-size: 24px;
+	}
+	.info-row {
+		font-size: 23px;
+		line-height: 32px;
 	}
 }
 </style>

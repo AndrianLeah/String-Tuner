@@ -38,6 +38,16 @@ describe('StringChips', () => {
 		expect(shown).toEqual(['1A', '2E', '3C', '4G'])
 	})
 
+	it('shows every chip green with a check once all strings are in tune, the last one too', () => {
+		const all = chips(preset('std6'), {
+			tunedStrings: new Set([0, 1, 2, 3, 4, 5]),
+			lockedStringIndex: 5,
+		})
+		expect(all.every((c) => c.classes().includes('tuned'))).toBe(true)
+		expect(all.some((c) => c.classes().includes('locked'))).toBe(false)
+		expect(all.every((c) => c.find('.chip-check').exists())).toBe(true)
+	})
+
 	it('marks the locked and the tuned strings, and selects by position in the tuning', async () => {
 		const wrapper = mount(StringChips, {
 			props: {

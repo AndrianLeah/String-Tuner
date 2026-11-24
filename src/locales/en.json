@@ -7,6 +7,7 @@
 		"hintTooLow": "Tune up",
 		"hintInRange": "Hold steady…",
 		"start": "Start",
+		"starting": "Starting…",
 		"stop": "Stop"
 	},
 	"selector": {
@@ -17,7 +18,8 @@
 		"violin": "Violin",
 		"custom": "custom",
 		"searchPlaceholder": "Search tunings…",
-		"noResults": "No tunings found"
+		"noResults": "No tunings found",
+		"delete": "Delete {name}"
 	},
 	"settings": {
 		"title": "Settings",
@@ -25,5 +27,9 @@
 		"light": "Light",
 		"dark": "Dark",
 		"language": "Language"
+	},
+	"common": {
+		"close": "Close",
+		"clear": "Clear"
 	}
 }

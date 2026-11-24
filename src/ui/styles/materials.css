@@ -1,0 +1,122 @@
+/*
+ * The three materials of the design, as classes the components put on their root.
+ *
+ *   .ui-glass            Liquid Glass for controls (Glass/Control): pill, icon buttons, chip track,
+ *                        Start/Stop. Use it sparingly and never on top of another glass.
+ *   .ui-glass--sheet     The thicker glass of sheets and dialogs (Glass/Panel).
+ *   .ui-material         Standard material for the content layer (Material/Thin): ring lens,
+ *                        meter, card. Blur and veil, no rim, no refraction.
+ *
+ *   .ui-pressable        Interaction states shared by every control: hover and pressed veils,
+ *                        a slight swell when pressed, 40 % when disabled.
+ */
+
+.ui-glass {
+	position: relative;
+	isolation: isolate;
+	background: var(--glass-fill);
+	-webkit-backdrop-filter: blur(var(--blur-control)) saturate(var(--glass-saturate));
+	backdrop-filter: blur(var(--blur-control)) saturate(var(--glass-saturate));
+	box-shadow: var(--shadow-control);
+}
+
+/* Specular rim (Glass/Edge): a 1 px diagonal gradient that leaves the inside clear */
+.ui-glass::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	padding: 1px;
+	border-radius: inherit;
+	background: linear-gradient(
+		135deg,
+		var(--glass-edge-hi),
+		var(--glass-edge-lo) 42%,
+		var(--glass-edge-lo) 68%,
+		var(--glass-edge-hi)
+	);
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask:
+		linear-gradient(#000 0 0) content-box exclude,
+		linear-gradient(#000 0 0);
+	pointer-events: none;
+}
+
+.ui-glass--sheet {
+	background: var(--glass-sheet);
+	-webkit-backdrop-filter: blur(var(--blur-sheet)) saturate(var(--glass-saturate));
+	backdrop-filter: blur(var(--blur-sheet)) saturate(var(--glass-saturate));
+	box-shadow: var(--shadow-sheet);
+}
+
+.ui-material {
+	background: var(--material-thin);
+	-webkit-backdrop-filter: blur(var(--blur-material));
+	backdrop-filter: blur(var(--blur-material));
+	border: 1px solid var(--separator);
+}
+
+/* ── Interaction states ─────────────────────────────────────────────────── */
+.ui-pressable {
+	position: relative;
+	isolation: isolate;
+	cursor: pointer;
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		opacity var(--duration-fast);
+}
+
+/* The veil sits above the control's own fill and below its label */
+.ui-pressable::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: transparent;
+	transition: background var(--duration-fast);
+	pointer-events: none;
+}
+
+@media (hover: hover) {
+	.ui-pressable:hover:not(:disabled)::before {
+		background: var(--state-hover);
+	}
+}
+
+.ui-pressable:active:not(:disabled)::before {
+	background: var(--state-pressed);
+}
+
+/* Glass swells a little under the finger */
+.ui-pressable:active:not(:disabled) {
+	transform: scale(1.02);
+}
+
+.ui-pressable:disabled {
+	cursor: default;
+	opacity: 0.4;
+}
+
+/* ── Accessibility settings ─────────────────────────────────────────────── */
+@media (prefers-reduced-transparency: reduce) {
+	.ui-glass,
+	.ui-glass--sheet,
+	.ui-material {
+		background: var(--surface-solid);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+}
+
+@media (prefers-contrast: more) {
+	.ui-glass::after {
+		background: var(--text-tertiary);
+	}
+
+	.ui-material {
+		border-color: var(--text-tertiary);
+	}
+}
