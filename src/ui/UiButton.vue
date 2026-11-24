@@ -54,6 +54,12 @@ withDefaults(
 	font-size: var(--font-size-headline);
 	font-weight: var(--font-weight-semibold);
 	white-space: nowrap;
+	/* Start turning into Stop eases from accent to glass */
+	transition:
+		background-color var(--duration-base) var(--ease-out),
+		color var(--duration-base) var(--ease-out),
+		transform var(--duration-base) var(--ease-spring),
+		opacity var(--duration-fast);
 }
 
 .ui-button--lg {

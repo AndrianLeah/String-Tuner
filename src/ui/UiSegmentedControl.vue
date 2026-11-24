@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends string">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import UiIcon from './UiIcon.vue'
 import type { IconName } from './icons'
 
@@ -11,8 +11,8 @@ export interface SegmentOption<V extends string = string> {
 
 /**
  * A row of mutually exclusive options in a grey track, like iOS's segmented control. The selected
- * segment is neutral (white/grey), not coloured: colour is kept for meaning. It behaves as a
- * radio group: arrow keys move the choice.
+ * segment is neutral (white/grey), not coloured: colour is kept for meaning. A single thumb
+ * slides under the chosen segment. It behaves as a radio group: arrow keys move the choice.
  */
 const props = withDefaults(
 	defineProps<{
@@ -26,6 +26,7 @@ const props = withDefaults(
 const model = defineModel<T>({ required: true })
 
 const buttons = ref<HTMLButtonElement[]>([])
+const selectedIndex = computed(() => props.options.findIndex((o) => o.value === model.value))
 
 function select(index: number) {
 	const option = props.options[index]
@@ -44,7 +45,14 @@ function onKeydown(event: KeyboardEvent, index: number) {
 </script>
 
 <template>
-	<div class="ui-segmented" :class="`ui-segmented--${size}`" role="radiogroup" :aria-label="label">
+	<div
+		class="ui-segmented"
+		:class="`ui-segmented--${size}`"
+		:style="{ '--count': options.length, '--index': selectedIndex }"
+		role="radiogroup"
+		:aria-label="label"
+	>
+		<span v-if="selectedIndex >= 0" class="ui-segmented__thumb" aria-hidden="true" />
 		<button
 			v-for="(option, index) in options"
 			:key="option.value"
@@ -66,11 +74,36 @@ function onKeydown(event: KeyboardEvent, index: number) {
 
 <style scoped>
 .ui-segmented {
+	position: relative;
+	isolation: isolate;
 	display: flex;
 	gap: var(--space-1);
 	padding: var(--space-1);
 	border-radius: var(--radius-capsule);
 	background: var(--fill-secondary);
+}
+
+/* The segments share the width equally, so the thumb's place follows from the index alone */
+.ui-segmented__thumb {
+	position: absolute;
+	top: var(--space-1);
+	bottom: var(--space-1);
+	left: var(--space-1);
+	width: calc((100% - (var(--count) + 1) * var(--space-1)) / var(--count));
+	border-radius: var(--radius-capsule);
+	background: var(--segment-selected);
+	box-shadow: var(--shadow-segment);
+	transform: translateX(calc(var(--index) * (100% + var(--space-1))));
+	transition:
+		transform var(--duration-slow) var(--ease-spring),
+		scale var(--duration-base) var(--ease-spring),
+		background var(--duration-base);
+	pointer-events: none;
+}
+
+/* Pressing the track squeezes the thumb a little, as on iOS */
+.ui-segmented:active .ui-segmented__thumb {
+	scale: 0.96;
 }
 
 .ui-segment {
@@ -89,9 +122,8 @@ function onKeydown(event: KeyboardEvent, index: number) {
 	font-weight: var(--font-weight-semibold);
 	white-space: nowrap;
 	transition:
-		background var(--duration-fast),
-		color var(--duration-fast),
-		box-shadow var(--duration-fast);
+		color var(--duration-base) var(--ease-out),
+		font-weight var(--duration-base) var(--ease-out);
 }
 
 .ui-segmented--sm .ui-segment {
@@ -105,15 +137,17 @@ function onKeydown(event: KeyboardEvent, index: number) {
 	font-size: var(--font-size-callout);
 }
 
+/* The weight eases too: Nunito is a variable font */
 .ui-segment.is-selected {
-	background: var(--segment-selected);
-	box-shadow: var(--shadow-segment);
 	color: var(--text-primary);
 	font-weight: var(--font-weight-bold);
 }
 
-/* The selected segment does not swell: it is already chosen */
-.ui-segment.is-selected:active {
+/* The thumb is the feedback: segments do not swell, and the chosen one shows no veil */
+.ui-segment:active:not(:disabled) {
 	transform: none;
+}
+.ui-segment.is-selected::before {
+	display: none;
 }
 </style>

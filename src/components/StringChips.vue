@@ -26,11 +26,28 @@ function isLocked(di: number): boolean {
 	const index = arrayIdx(di)
 	return props.isListening && props.lockedStringIndex === index && !props.tunedStrings.has(index)
 }
+
+// The locked outline is one cursor that slides from string to string
+const cursorIndex = computed(() => displayStrings.value.findIndex((_, di) => isLocked(di)))
 </script>
 
 <template>
 	<!-- One glass track holds every chip: no glass on glass -->
-	<UiSurface class="strings-display" material="glass" radius="xl">
+	<UiSurface
+		class="strings-display"
+		material="glass"
+		radius="xl"
+		:style="{ '--count': displayStrings.length }"
+	>
+		<!-- The index sits on the cursor itself, so a cursor fading out stays where it was -->
+		<Transition name="ui-fade">
+			<span
+				v-if="cursorIndex >= 0"
+				class="chip-cursor"
+				:style="{ '--index': cursorIndex }"
+				aria-hidden="true"
+			/>
+		</Transition>
 		<button
 			v-for="(str, di) in displayStrings"
 			:key="di"
@@ -46,13 +63,15 @@ function isLocked(di: number): boolean {
 			<span class="chip-note">{{ formatNote(str.note, tuning.preferFlats) }}</span>
 			<span class="chip-octave">{{ str.octave }}</span>
 			<!-- Tuned is said with a check too, not by colour alone -->
-			<UiIcon
-				v-if="tunedStrings.has(arrayIdx(di))"
-				class="chip-check"
-				name="check"
-				:size="14"
-				:stroke-width="3.4"
-			/>
+			<Transition name="ui-pop">
+				<UiIcon
+					v-if="tunedStrings.has(arrayIdx(di))"
+					class="chip-check"
+					name="check"
+					:size="14"
+					:stroke-width="3.4"
+				/>
+			</Transition>
 		</button>
 	</UiSurface>
 </template>
@@ -79,10 +98,30 @@ function isLocked(di: number): boolean {
 	color: var(--text-primary);
 	font-variant-numeric: tabular-nums;
 	transition:
-		background var(--duration-fast),
-		box-shadow var(--duration-fast),
-		transform var(--duration-fast) var(--ease-out),
-		opacity var(--duration-fast);
+		background-color var(--duration-slow) var(--ease-out),
+		transform var(--duration-base) var(--ease-spring),
+		opacity var(--duration-base);
+}
+.string-chip > span {
+	transition: color var(--duration-base) var(--ease-out);
+}
+
+/* The string being tuned: accent tint and outline, sliding from chip to chip. The chips share
+   the width equally, so its place follows from the index alone */
+.chip-cursor {
+	position: absolute;
+	top: var(--space-1);
+	bottom: var(--space-1);
+	left: var(--space-1);
+	width: calc((100% - (var(--count) + 1) * var(--space-1)) / var(--count));
+	border-radius: var(--radius-lg);
+	background: var(--accent-tint);
+	box-shadow: inset 0 0 0 1.5px var(--accent);
+	transform: translateX(calc(var(--index) * (100% + var(--space-1))));
+	transition:
+		transform var(--duration-slow) var(--ease-spring),
+		opacity var(--duration-base);
+	pointer-events: none;
 }
 
 .chip-num,
@@ -105,11 +144,6 @@ function isLocked(di: number): boolean {
 	right: 3px;
 }
 
-/* The string being tuned: accent tint and outline */
-.string-chip.locked {
-	background: var(--accent-tint);
-	box-shadow: inset 0 0 0 1.5px var(--accent);
-}
 .string-chip.locked .chip-num,
 .string-chip.locked .chip-octave {
 	color: var(--accent);

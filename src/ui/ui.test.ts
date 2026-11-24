@@ -20,6 +20,14 @@ describe('UiIcon', () => {
 		expect(named.attributes('aria-label')).toBe('Settings')
 	})
 
+	it('can draw its strokes in, each path measured as length 1', () => {
+		const paths = mount(UiIcon, { props: { name: 'check', draw: true } }).findAll('path')
+		expect(paths.every((p) => p.attributes('pathLength') === '1')).toBe(true)
+		expect(paths.every((p) => p.classes('ui-icon__draw'))).toBe(true)
+		const still = mount(UiIcon, { props: { name: 'check' } }).find('path')
+		expect(still.attributes('pathLength')).toBeUndefined()
+	})
+
 	it('draws every icon of the set on the 24 px grid', () => {
 		for (const name of Object.keys(ICONS) as (keyof typeof ICONS)[]) {
 			const svg = mount(UiIcon, { props: { name } })
@@ -85,6 +93,17 @@ describe('UiSegmentedControl', () => {
 		const radios = wrapper.findAll('[role=radio]')
 		expect(radios.map((r) => r.attributes('aria-checked'))).toEqual(['false', 'true', 'false'])
 		expect(radios.map((r) => r.attributes('tabindex'))).toEqual(['-1', '0', '-1'])
+		wrapper.unmount()
+	})
+
+	it('slides one thumb to the chosen segment', async () => {
+		const wrapper = control('b')
+		const style = () => wrapper.attributes('style') ?? ''
+		expect(wrapper.findAll('.ui-segmented__thumb')).toHaveLength(1)
+		expect(style()).toContain('--count: 3')
+		expect(style()).toContain('--index: 1')
+		await wrapper.findAll('[role=radio]')[2].trigger('click')
+		expect(style()).toContain('--index: 2')
 		wrapper.unmount()
 	})
 

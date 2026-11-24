@@ -48,6 +48,23 @@ describe('StringChips', () => {
 		expect(all.every((c) => c.find('.chip-check').exists())).toBe(true)
 	})
 
+	it('puts one sliding cursor on the string being tuned, none when not listening', () => {
+		const mountChips = (props = {}) =>
+			mount(StringChips, {
+				props: {
+					tuning: preset('std6'),
+					isListening: true,
+					tunedStrings: new Set<number>(),
+					lockedStringIndex: 1,
+					...props,
+				},
+			})
+		const cursor = mountChips().findAll('.chip-cursor')
+		expect(cursor).toHaveLength(1)
+		expect(cursor[0].attributes('style')).toContain('--index: 4') // A2 is the 5th chip
+		expect(mountChips({ isListening: false }).find('.chip-cursor').exists()).toBe(false)
+	})
+
 	it('marks the locked and the tuned strings, and selects by position in the tuning', async () => {
 		const wrapper = mount(StringChips, {
 			props: {

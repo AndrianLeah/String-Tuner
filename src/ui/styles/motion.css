@@ -1,0 +1,81 @@
+/*
+ * Shared motion: transitions to use with Vue's <Transition name="…">, and keyframes.
+ * Reduce Motion turns all of them off (base.css).
+ *
+ *   ui-fade   appears and disappears in place (a section, the chip cursor)
+ *   ui-swap   one content replaced by another, with mode="out-in" (a note by the next one)
+ *   ui-pop    a small mark that springs in (the check of a tuned string)
+ *
+ * An element that declares its own `transition` replaces these: list opacity and transform in it.
+ */
+
+.ui-fade-enter-active {
+	transition: opacity var(--duration-base) var(--ease-out);
+}
+.ui-fade-leave-active {
+	transition: opacity var(--duration-fast) var(--ease-in);
+}
+.ui-fade-enter-from,
+.ui-fade-leave-to {
+	opacity: 0;
+}
+
+.ui-swap-enter-active {
+	transition:
+		opacity var(--duration-base) var(--ease-out),
+		transform var(--duration-slow) var(--ease-spring);
+}
+.ui-swap-leave-active {
+	transition:
+		opacity var(--duration-fast) var(--ease-in),
+		transform var(--duration-fast) var(--ease-in);
+}
+.ui-swap-enter-from {
+	opacity: 0;
+	transform: translateY(8px) scale(0.94);
+}
+.ui-swap-leave-to {
+	opacity: 0;
+	transform: translateY(-6px) scale(0.98);
+}
+
+.ui-pop-enter-active {
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		transform var(--duration-slow) var(--ease-spring);
+}
+.ui-pop-leave-active {
+	transition:
+		opacity var(--duration-fast) var(--ease-in),
+		transform var(--duration-fast) var(--ease-in);
+}
+.ui-pop-enter-from,
+.ui-pop-leave-to {
+	opacity: 0;
+	transform: scale(0.3);
+}
+
+/* Content rising into place when a screen appears; stagger it with animation-delay */
+@keyframes ui-rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+}
+
+/* A stroke drawing itself: give the path pathLength="1" and stroke-dasharray: 1 */
+@keyframes ui-draw {
+	from {
+		stroke-dashoffset: 1;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+/* Theme change (motion.ts): the new theme opens as a circle from the tap; no cross-fade */
+html.ui-theme-reveal::view-transition-old(root),
+html.ui-theme-reveal::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
