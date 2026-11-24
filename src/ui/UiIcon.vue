@@ -11,6 +11,8 @@ const props = withDefaults(
 		strokeWidth?: number
 		/** Accessible name; without it the icon is decorative and hidden from screen readers */
 		label?: string
+		/** Draw the strokes in when the icon appears (a check that writes itself) */
+		draw?: boolean
 	}>(),
 	{ size: 24, strokeWidth: undefined, label: undefined },
 )
@@ -34,7 +36,13 @@ const icon = computed(() => ICONS[props.name])
 		:aria-hidden="label ? undefined : 'true'"
 		focusable="false"
 	>
-		<path v-for="(d, i) in icon.paths" :key="i" :d="d" />
+		<path
+			v-for="(d, i) in icon.paths"
+			:key="i"
+			:d="d"
+			:pathLength="draw ? 1 : undefined"
+			:class="{ 'ui-icon__draw': draw }"
+		/>
 	</svg>
 </template>
 
@@ -42,5 +50,10 @@ const icon = computed(() => ICONS[props.name])
 .ui-icon {
 	flex: none;
 	display: block;
+}
+
+.ui-icon__draw {
+	stroke-dasharray: 1;
+	animation: ui-draw var(--duration-slow) var(--ease-out) var(--ui-icon-draw-delay, 0ms) both;
 }
 </style>

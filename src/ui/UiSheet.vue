@@ -236,27 +236,58 @@ onBeforeUnmount(() => returnFocusTo?.focus())
 	}
 }
 
-/* ── <Transition name="ui-sheet"> ───────────────────────────────────────── */
-.ui-sheet-enter-active,
-.ui-sheet-leave-active {
-	transition: opacity var(--duration-base) var(--ease-out);
+/*
+ * ── <Transition name="ui-sheet"> ───────────────────────────────────────────
+ * The scrim darkens and blurs in while the panel slides up whole, without fading; a dialog
+ * rises a little and grows instead. Vue times the transition on the root element, so the
+ * scrim and the panel take the same time.
+ */
+.ui-sheet-enter-active {
+	transition:
+		background-color var(--duration-slow) var(--ease-out),
+		backdrop-filter var(--duration-slow) var(--ease-out),
+		-webkit-backdrop-filter var(--duration-slow) var(--ease-out);
 }
-.ui-sheet-enter-active .ui-sheet__panel,
+.ui-sheet-leave-active {
+	transition:
+		background-color var(--duration-base) var(--ease-in),
+		backdrop-filter var(--duration-base) var(--ease-in),
+		-webkit-backdrop-filter var(--duration-base) var(--ease-in);
+}
+.ui-sheet-enter-active .ui-sheet__panel {
+	transition: transform var(--duration-slow) var(--ease-out);
+	will-change: transform;
+}
 .ui-sheet-leave-active .ui-sheet__panel {
-	transition: transform var(--duration-base) var(--ease-out);
+	transition: transform var(--duration-base) var(--ease-in);
+	will-change: transform;
 }
 .ui-sheet-enter-from,
 .ui-sheet-leave-to {
-	opacity: 0;
+	background-color: transparent;
+	-webkit-backdrop-filter: blur(0);
+	backdrop-filter: blur(0);
 }
 .ui-sheet-enter-from .ui-sheet__panel,
 .ui-sheet-leave-to .ui-sheet__panel {
-	transform: translateY(40%);
+	transform: translateY(calc(100% + var(--space-6)));
 }
+
 @media (min-width: 640px) and (min-height: 640px) {
+	.ui-sheet-enter-active .ui-sheet__panel {
+		transition:
+			transform var(--duration-slow) var(--ease-spring),
+			opacity var(--duration-base) var(--ease-out);
+	}
+	.ui-sheet-leave-active .ui-sheet__panel {
+		transition:
+			transform var(--duration-base) var(--ease-in),
+			opacity var(--duration-base) var(--ease-in);
+	}
 	.ui-sheet-enter-from .ui-sheet__panel,
 	.ui-sheet-leave-to .ui-sheet__panel {
-		transform: scale(0.94);
+		opacity: 0;
+		transform: translateY(24px) scale(0.95);
 	}
 }
 </style>

@@ -42,9 +42,11 @@ withDefaults(
 	font-weight: var(--font-weight-bold);
 	white-space: nowrap;
 	transition:
-		background var(--duration-fast),
-		color var(--duration-fast),
-		opacity var(--duration-fast);
+		background-color var(--duration-base) var(--ease-out),
+		color var(--duration-base) var(--ease-out),
+		opacity var(--duration-base) var(--ease-out),
+		transform var(--duration-slow) var(--ease-spring),
+		visibility var(--duration-base);
 }
 
 /* The 24 px grid leaves 5 px around a check: 0.6 × height keeps the glyph's optical padding */
@@ -69,5 +71,6 @@ withDefaults(
 .ui-status-pill.is-hidden {
 	visibility: hidden;
 	opacity: 0;
+	transform: scale(0.85);
 }
 </style>

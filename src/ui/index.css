@@ -1,4 +1,5 @@
-/* The design system's global layer: tokens first, then page defaults, then materials. */
+/* The design system's global layer: tokens first, then page defaults, materials and motion. */
 @import './styles/tokens.css';
 @import './styles/base.css';
 @import './styles/materials.css';
+@import './styles/motion.css';

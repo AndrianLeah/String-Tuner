@@ -106,45 +106,50 @@ const hintPill = computed(() => (hint.value ? HINTS[hint.value] : undefined))
 					:complete="allTuned"
 				/>
 
-				<p v-if="allTuned" class="all-tuned" role="status">{{ t('tuner.allTuned') }}</p>
-				<template v-else>
-					<p class="info-row">
-						<span class="string-label">{{ t('tuner.string', { n: guitarStringNum }) }}</span>
-						<span class="info-sep" aria-hidden="true" />
-						<span class="frequency">{{
-							frequency !== null ? `${frequency.toFixed(1)} Hz` : '—'
-						}}</span>
-					</p>
-					<UiStatusPill
-						class="hint"
-						:tone="hintPill?.tone"
-						:icon="hintPill?.icon"
-						:hidden="!hintPill"
-					>
-						{{ hintPill ? t(hintPill.text) : '' }}
-					</UiStatusPill>
-				</template>
+				<!-- The reading gives way to the final message -->
+				<Transition name="ui-swap" mode="out-in">
+					<p v-if="allTuned" class="all-tuned" role="status">{{ t('tuner.allTuned') }}</p>
+					<div v-else class="readout">
+						<p class="info-row">
+							<span class="string-label">{{ t('tuner.string', { n: guitarStringNum }) }}</span>
+							<span class="info-sep" aria-hidden="true" />
+							<span class="frequency">{{
+								frequency !== null ? `${frequency.toFixed(1)} Hz` : '—'
+							}}</span>
+						</p>
+						<UiStatusPill
+							class="hint"
+							:tone="hintPill?.tone"
+							:icon="hintPill?.icon"
+							:hidden="!hintPill"
+						>
+							{{ hintPill ? t(hintPill.text) : '' }}
+						</UiStatusPill>
+					</div>
+				</Transition>
 			</section>
 
 			<!-- Meter + Start/Stop, near the thumb -->
-			<section v-if="!allTuned" class="controls">
-				<CentsMeter
-					:needle-percent="needlePercent"
-					:status="statusClass"
-					:clarity="signalClarity"
-				/>
+			<Transition name="ui-fade">
+				<section v-if="!allTuned" class="controls">
+					<CentsMeter
+						:needle-percent="needlePercent"
+						:status="statusClass"
+						:clarity="signalClarity"
+					/>
 
-				<p v-if="error" class="error" role="alert">{{ error }}</p>
+					<p v-if="error" class="error" role="alert">{{ error }}</p>
 
-				<UiButton
-					:variant="isListening ? 'glass' : 'primary'"
-					:loading="starting"
-					block
-					@click="toggle"
-				>
-					{{ starting ? t('tuner.starting') : isListening ? t('tuner.stop') : t('tuner.start') }}
-				</UiButton>
-			</section>
+					<UiButton
+						:variant="isListening ? 'glass' : 'primary'"
+						:loading="starting"
+						block
+						@click="toggle"
+					>
+						{{ starting ? t('tuner.starting') : isListening ? t('tuner.stop') : t('tuner.start') }}
+					</UiButton>
+				</section>
+			</Transition>
 		</UiSurface>
 	</div>
 
@@ -233,6 +238,13 @@ const hintPill = computed(() => (hint.value ? HINTS[hint.value] : undefined))
 	gap: var(--space-3);
 }
 
+.readout {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: inherit;
+}
+
 .controls {
 	grid-area: controls;
 	display: flex;
@@ -275,6 +287,20 @@ const hintPill = computed(() => (hint.value ? HINTS[hint.value] : undefined))
 	font-size: var(--font-size-footnote);
 	font-weight: var(--font-weight-semibold);
 	text-align: center;
+}
+
+/* The screen comes in piece by piece, top to bottom */
+.tuner-card > * {
+	animation: ui-rise var(--duration-slow) var(--ease-out) both;
+}
+.tuner-card > :nth-child(2) {
+	animation-delay: 50ms;
+}
+.tuner-card > :nth-child(3) {
+	animation-delay: 100ms;
+}
+.tuner-card > :nth-child(4) {
+	animation-delay: 150ms;
 }
 
 /* All in tune: the ring and the message take the space of the controls */

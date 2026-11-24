@@ -170,7 +170,11 @@
 	--glow-green: drop-shadow(0 0 9px var(--green-glow)); /* Glow/Green */
 	--focus-ring-width: 3px;
 
+	/* Motion: things arrive with ease-out (or a gentle spring), leave quicker with ease-in */
 	--duration-fast: 150ms;
 	--duration-base: 250ms;
-	--ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+	--duration-slow: 420ms;
+	--ease-out: cubic-bezier(0.32, 0.72, 0, 1); /* iOS sheets */
+	--ease-in: cubic-bezier(0.4, 0, 0.9, 0.4);
+	--ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1); /* a small overshoot, for playful moves */
 }

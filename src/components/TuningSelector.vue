@@ -83,37 +83,40 @@ function handleSelect(id: string) {
 			/>
 		</template>
 
-		<div class="tuning-list">
-			<p v-if="filtered.length === 0" class="no-results">
-				{{ t('selector.noResults') }}
-			</p>
+		<!-- Another instrument: its list fades in where the other one was -->
+		<Transition name="ui-fade" mode="out-in">
+			<div :key="activeCategory" class="tuning-list">
+				<p v-if="filtered.length === 0" class="no-results">
+					{{ t('selector.noResults') }}
+				</p>
 
-			<UiListRow
-				v-for="tuning in filtered"
-				:key="tuning.id"
-				class="tuning-card"
-				:title="tuning.name"
-				:selected="activeTuning.id === tuning.id"
-				@select="handleSelect(tuning.id)"
-			>
-				<template #meta>
-					<span class="card-strings">{{ tuning.strings }} {{ t('tuner.strSuffix') }}</span>
-					<span v-if="isCustom(tuning.id)" class="badge-custom">{{ t('selector.custom') }}</span>
-				</template>
-				<!-- Thinnest string first, as on the chips -->
-				<span v-for="(str, i) in [...tuning.tuning].reverse()" :key="i" class="string-note"
-					>{{ formatNote(str.note, tuning.preferFlats) }}{{ str.octave }}</span
+				<UiListRow
+					v-for="tuning in filtered"
+					:key="tuning.id"
+					class="tuning-card"
+					:title="tuning.name"
+					:selected="activeTuning.id === tuning.id"
+					@select="handleSelect(tuning.id)"
 				>
-				<template v-if="isCustom(tuning.id)" #action>
-					<UiIconButton
-						icon="close"
-						variant="plain"
-						:label="t('selector.delete', { name: tuning.name })"
-						@click="deleteCustomTuning(tuning.id)"
-					/>
-				</template>
-			</UiListRow>
-		</div>
+					<template #meta>
+						<span class="card-strings">{{ tuning.strings }} {{ t('tuner.strSuffix') }}</span>
+						<span v-if="isCustom(tuning.id)" class="badge-custom">{{ t('selector.custom') }}</span>
+					</template>
+					<!-- Thinnest string first, as on the chips -->
+					<span v-for="(str, i) in [...tuning.tuning].reverse()" :key="i" class="string-note"
+						>{{ formatNote(str.note, tuning.preferFlats) }}{{ str.octave }}</span
+					>
+					<template v-if="isCustom(tuning.id)" #action>
+						<UiIconButton
+							icon="close"
+							variant="plain"
+							:label="t('selector.delete', { name: tuning.name })"
+							@click="deleteCustomTuning(tuning.id)"
+						/>
+					</template>
+				</UiListRow>
+			</div>
+		</Transition>
 	</UiSheet>
 </template>
 

@@ -64,7 +64,7 @@
 	isolation: isolate;
 	cursor: pointer;
 	transition:
-		transform var(--duration-fast) var(--ease-out),
+		transform var(--duration-base) var(--ease-spring),
 		opacity var(--duration-fast);
 }
 
@@ -76,7 +76,7 @@
 	z-index: -1;
 	border-radius: inherit;
 	background: transparent;
-	transition: background var(--duration-fast);
+	transition: background var(--duration-base) var(--ease-out);
 	pointer-events: none;
 }
 

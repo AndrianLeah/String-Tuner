@@ -36,22 +36,36 @@ const head = computed(() => {
 		<svg class="ring-svg" viewBox="0 0 260 260" aria-hidden="true">
 			<circle class="ring-track" :cx="CENTER" :cy="CENTER" :r="RING_R" />
 		</svg>
-		<svg v-if="progress > 0" class="ring-svg ring-glow" viewBox="0 0 260 260" aria-hidden="true">
-			<circle
-				class="ring-progress"
-				:cx="CENTER"
-				:cy="CENTER"
-				:r="RING_R"
-				:stroke-dasharray="ringDash"
-				:transform="`rotate(-90 ${CENTER} ${CENTER})`"
+		<!-- When a string is confirmed the full arc fades away rather than vanishing -->
+		<Transition name="ui-fade">
+			<svg v-if="progress > 0" class="ring-svg ring-glow" viewBox="0 0 260 260" aria-hidden="true">
+				<circle
+					class="ring-progress"
+					:cx="CENTER"
+					:cy="CENTER"
+					:r="RING_R"
+					:stroke-dasharray="ringDash"
+					:transform="`rotate(-90 ${CENTER} ${CENTER})`"
+				/>
+				<circle class="ring-head" :cx="head.x" :cy="head.y" r="9" />
+			</svg>
+		</Transition>
+		<!-- The next string's note takes the place of the last one; at the end a check draws itself -->
+		<Transition name="ui-swap" mode="out-in">
+			<UiIcon
+				v-if="complete"
+				key="complete"
+				class="ring-check"
+				name="check"
+				size="51%"
+				:stroke-width="2.15"
+				draw
 			/>
-			<circle class="ring-head" :cx="head.x" :cy="head.y" r="9" />
-		</svg>
-		<UiIcon v-if="complete" class="ring-check" name="check" size="51%" :stroke-width="2.15" />
-		<div v-else class="note-display" :class="status">
-			<span class="note-name">{{ note }}</span>
-			<span class="note-octave">{{ octave }}</span>
-		</div>
+			<div v-else :key="note + octave" class="note-display" :class="status">
+				<span class="note-name">{{ note }}</span>
+				<span class="note-octave">{{ octave }}</span>
+			</div>
+		</Transition>
 	</div>
 </template>
 
@@ -106,7 +120,11 @@ const head = computed(() => {
 	gap: 0.77cqi;
 	color: var(--note-idle);
 	line-height: 1;
-	transition: color var(--duration-fast);
+	/* Its own transition replaces ui-swap's, so it carries opacity and transform too */
+	transition:
+		color var(--duration-base) var(--ease-out),
+		opacity var(--duration-base) var(--ease-out),
+		transform var(--duration-slow) var(--ease-spring);
 }
 .note-display.in-tune {
 	color: var(--green);
@@ -127,8 +145,19 @@ const head = computed(() => {
 }
 
 .ring-check {
+	--ui-icon-draw-delay: 120ms;
 	position: relative;
 	color: var(--green);
 	filter: var(--glow-green);
+}
+
+/* Every string in tune: the ring gives a small happy bounce */
+.ring-wrapper.complete {
+	animation: ring-celebrate 700ms var(--ease-spring);
+}
+@keyframes ring-celebrate {
+	40% {
+		transform: scale(1.05);
+	}
 }
 </style>
