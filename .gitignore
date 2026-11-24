@@ -12,8 +12,11 @@ dist
 dist-ssr
 *.local
 
-# Design mockups: kept locally, never committed
-mockup/
+# Design mockups: the FigCraft file, the background, the tokens and the foundations boards are
+# committed (binaries through Git LFS, see .gitattributes). The PNG of each screen is an export
+# of the FigCraft file, so it stays local.
+mockup/png/*
+!mockup/png/foundations-*.png
 
 # Editor directories and files
 .vscode/*
