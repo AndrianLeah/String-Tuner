@@ -2,7 +2,7 @@
 
 **[Live Demo](https://andrianleah.github.io/String-Tuner/)**
 
-![String Tuner screenshot](docs/string-tuner.png)
+![String Tuner on a phone: a string too low, a string in tune, every string in tune](docs/screenshots/phones.webp)
 
 A chromatic instrument tuner that runs in the browser and on Android. It listens to your microphone in real time, detects the pitch of the note you're playing, and tells you how many cents sharp or flat you are from the target string.
 
@@ -13,11 +13,31 @@ A chromatic instrument tuner that runs in the browser and on Android. It listens
 - Preset tunings (Standard, Drop D, Half Step Down, Open tunings, scordatura variants, and more)
 - Sequential string-by-string tuning flow — starts on the lowest/thickest string, confirms in tune, then auto-advances; tap any chip to jump to a specific string
 - Visual stability ring (fills as pitch holds steady) and cents needle with opacity tied to signal confidence
-- Per-string tuned status — confirmed strings are marked; tapping re-checks them
+- Per-string tuned status — confirmed strings turn green with a check; tapping re-checks them
 - Supports flat note display (e.g. Eb instead of D#)
-- Responsive layout — fullscreen on phones and landscape, floating card on larger screens
+- Liquid Glass interface in dark and light themes, with a layout for phones (portrait and landscape), tablets and desktop
+- Accessible: 44 pt touch targets, full keyboard use, states shown with icons and words as well as colour, and support for Reduce Motion, Reduce Transparency and Increase Contrast
 - English, Italian, and Chinese (Simplified) UI languages
-- Packaged as a native Android app via Capacitor
+- Installable as a web app, and packaged as a native Android app via Capacitor
+
+## Screenshots
+
+<table>
+  <tr>
+    <td colspan="2"><img src="public/screenshots/desktop-dark.webp" alt="Desktop, dark theme: the ring on the left, the strings, the meter and Stop on the right"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/desktop-light.webp" alt="Desktop, light theme: the A string 30 cents low, with Tune up"></td>
+    <td width="50%"><img src="docs/screenshots/desktop-dark-tunings.webp" alt="Desktop: the list of tunings as a dialog, in two columns"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/phone-landscape-dark.webp" alt="Phone in landscape: controls on the left, the ring on the right"></td>
+    <td width="50%" rowspan="2"><img src="docs/screenshots/tablet-light.webp" alt="Tablet in portrait, light theme: the tuner on a card"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/sheets.webp" alt="Phone: the tunings sheet and the settings sheet"></td>
+  </tr>
+</table>
 
 ## Tech Stack
 
@@ -26,6 +46,27 @@ A chromatic instrument tuner that runs in the browser and on Android. It listens
 - [Capacitor](https://capacitorjs.com/) for Android packaging
 - [vue-i18n](https://vue-i18n.intlify.dev/) for localisation
 - [pitchy](https://github.com/ianprime0509/pitchy) for pitch detection
+- [Nunito](https://fonts.google.com/specimen/Nunito) (SIL Open Font License), bundled with the app
+- [Vitest](https://vitest.dev/) and [ESLint](https://eslint.org/), run on every pull request
+
+## Design
+
+The interface is a small design system in [`src/ui`](src/ui/README.md):
+
+- **Tokens:** colours for both themes, spacing, radii, type and effects.
+- **Materials:** the glass and thin materials, as classes.
+- **Components:** buttons, segmented controls, sheets, list rows and the rest.
+
+The screens in `src/components` are built only from these pieces.
+
+The source designs are in [`mockup/`](mockup/README.md):
+
+- **FigCraft file:** the screens for every size, in both themes.
+- **Background:** the "strings in resonance" artwork.
+- **Tokens:** the exported design variables.
+- **Foundations boards:** colours, spacing, type and control states.
+
+The large files are stored with [Git LFS](https://git-lfs.com/). Run `git lfs install` once, then `git lfs pull` to download them after cloning.
 
 ## Signal Processing Architecture
 
@@ -76,7 +117,7 @@ The **decay gate** applies when string RMS drops below 0.04 (quiet tail). It mus
 
 ## Running Locally
 
-**Prerequisites:** Node.js 18+
+**Prerequisites:** Node.js 20.19+ or 22.12+
 
 ```bash
 # Install dependencies
@@ -86,9 +127,15 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser. The app will ask for microphone permission on first use.
+Open [http://localhost:5173/String-Tuner/](http://localhost:5173/String-Tuner/) in your browser. The app will ask for microphone permission on first use.
 
 ```bash
+# Run the tests (including a virtual instrument played through the whole audio chain)
+npm test
+
+# Check the code
+npm run lint
+
 # Build for production
 npm run build
 

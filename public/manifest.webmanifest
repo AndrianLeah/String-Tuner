@@ -7,6 +7,10 @@
   "display": "standalone",
   "background_color": "#07060B",
   "theme_color": "#07060B",
+  "categories": [
+    "music",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "assets/icons/icon-48.webp",
@@ -49,6 +53,22 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/phone-dark.webp",
+      "sizes": "780x1688",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Tuning the D string: in tune, hold steady"
+    },
+    {
+      "src": "screenshots/desktop-dark.webp",
+      "sizes": "1440x900",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "The tuner on a desktop screen"
     }
   ]
 }
